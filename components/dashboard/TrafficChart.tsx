@@ -21,7 +21,7 @@ interface TrafficChartProps {
 }
 
 const CHANNELS = [
-  { key: 'organic_search', label: 'Orgánico', color: '#6366F1' },
+  { key: 'organic_search', label: 'Orgánico', color: '#10B981' },
   { key: 'direct', label: 'Directo', color: '#10B981' },
   { key: 'referral', label: 'Referral', color: '#F59E0B' },
   { key: 'social', label: 'Social', color: '#EC4899' },
@@ -31,62 +31,95 @@ const CHANNELS = [
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-[#14141C] border border-[#1E1E2A] rounded-lg p-3 shadow-xl">
-      <p className="text-xs text-[#8B8B9A] mb-2">{label}</p>
-      {payload.map((entry: any) => (
-        <div key={entry.dataKey} className="flex items-center gap-2 text-xs">
-          <div className="w-2 h-2 rounded-full" style={{ background: entry.color }} />
-          <span className="text-[#8B8B9A]">{entry.name}:</span>
-          <span className="font-mono font-medium text-[#F1F1F5]">{entry.value?.toLocaleString()}</span>
-        </div>
-      ))}
+    <div className="bg-[#111118]/90 border border-white/[0.08] rounded-xl p-4 shadow-2xl backdrop-blur-md">
+      <p className="text-[10px] font-bold text-[#8B8B9A] mb-3 uppercase tracking-widest">{label}</p>
+      <div className="space-y-2">
+        {payload.map((entry: any) => (
+          <div key={entry.dataKey} className="flex items-center justify-between gap-8 text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ background: entry.color }} />
+              <span className="text-[#8B8B9A] font-medium">{entry.name}</span>
+            </div>
+            <span className="font-mono font-bold text-[#F1F1F5]">{entry.value?.toLocaleString()}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
 
 export function TrafficChart({ data }: TrafficChartProps) {
+  const hasData = data && data.length > 0;
+
   return (
-    <div className="bg-[#14141C] border border-[#1E1E2A] rounded-xl p-5">
-      <h3 className="text-xs text-[#8B8B9A] font-medium uppercase tracking-wider mb-4">
-        Tráfico por canal
-      </h3>
-      <ResponsiveContainer width="100%" height={220}>
-        <AreaChart data={data} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
-          <defs>
-            {CHANNELS.map(({ key, color }) => (
-              <linearGradient key={key} id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={color} stopOpacity={0.15} />
-                <stop offset="95%" stopColor={color} stopOpacity={0} />
-              </linearGradient>
+    <div className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 hover:border-[#10B98150] transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl group">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">
+          Tráfico por canal
+        </h3>
+        {hasData && (
+          <div className="flex items-center gap-4">
+            {CHANNELS.slice(0, 3).map(ch => (
+              <div key={ch.key} className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full" style={{ background: ch.color }} />
+                <span className="text-[10px] font-bold text-[#8B8B9A] uppercase">{ch.label}</span>
+              </div>
             ))}
-          </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1E1E2A" vertical={false} />
-          <XAxis
-            dataKey="date"
-            tick={{ fill: '#8B8B9A', fontSize: 11 }}
-            tickLine={false}
-            axisLine={false}
-          />
-          <YAxis
-            tick={{ fill: '#8B8B9A', fontSize: 11 }}
-            tickLine={false}
-            axisLine={false}
-          />
-          <Tooltip content={<CustomTooltip />} />
-          {CHANNELS.map(({ key, label, color }) => (
-            <Area
-              key={key}
-              type="monotone"
-              dataKey={key}
-              name={label}
-              stroke={color}
-              strokeWidth={1.5}
-              fill={`url(#grad-${key})`}
-              dot={false}
-            />
-          ))}
-        </AreaChart>
-      </ResponsiveContainer>
+          </div>
+        )}
+      </div>
+      
+      <div className="relative h-[260px] w-full">
+        {!hasData ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3">
+            <div className="w-12 h-12 bg-white/[0.03] rounded-full border border-white/[0.05] flex items-center justify-center">
+              <span className="text-xl">📊</span>
+            </div>
+            <p className="text-sm text-[#8B8B9A] font-medium">Buscando datos de tráfico...</p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={data} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+              <defs>
+                {CHANNELS.map(({ key, color }) => (
+                  <linearGradient key={key} id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={color} stopOpacity={0.15} />
+                    <stop offset="95%" stopColor={color} stopOpacity={0} />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.03)" vertical={false} />
+              <XAxis
+                dataKey="date"
+                tick={{ fill: '#4B4B5A', fontSize: 10, fontWeight: 600 }}
+                tickLine={false}
+                axisLine={false}
+                dy={10}
+              />
+              <YAxis
+                tick={{ fill: '#4B4B5A', fontSize: 10, fontWeight: 600 }}
+                tickLine={false}
+                axisLine={false}
+                dx={-10}
+              />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
+              {CHANNELS.map(({ key, label, color }) => (
+                <Area
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  name={label}
+                  stroke={color}
+                  strokeWidth={2}
+                  fill={`url(#grad-${key})`}
+                  dot={false}
+                  activeDot={{ r: 4, strokeWidth: 0, fill: color }}
+                />
+              ))}
+            </AreaChart>
+          </ResponsiveContainer>
+        )}
+      </div>
     </div>
   );
 }

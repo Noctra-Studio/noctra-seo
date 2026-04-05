@@ -24,30 +24,41 @@ const effortConfig = {
 
 export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
   return (
-    <div className="bg-[#14141C] border border-[#1E1E2A] rounded-xl p-5">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-5 h-5 bg-[#6366F115] rounded flex items-center justify-center">
-          <Sparkles size={12} className="text-[#6366F1]" />
+    <div className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 hover:border-[#10B98150] transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none" />
+      
+      <div className="flex items-center gap-3 mb-6 relative z-10">
+        <div className="p-2 bg-[#10B98115] rounded-lg group-hover:bg-[#10B98125] transition-colors">
+          <Sparkles size={16} className="text-[#10B981]" />
         </div>
-        <h3 className="text-xs text-[#8B8B9A] font-medium uppercase tracking-wider">
-          AI Insights
+        <h3 className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">
+          AI Monitoring
         </h3>
       </div>
 
       {loading && (
-        <div className="space-y-3">
+        <div className="space-y-4 relative z-10">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-4 bg-[#1E1E2A] rounded animate-pulse" style={{ width: `${80 - i * 10}%` }} />
+            <div key={i} className="h-4 bg-white/[0.03] rounded-lg animate-pulse" style={{ width: `${80 - i * 10}%` }} />
           ))}
         </div>
       )}
 
       {!loading && !insight && (
-        <div className="py-6 text-center">
-          <Sparkles size={24} className="text-[#2A2A38] mx-auto mb-2" />
-          <p className="text-sm text-[#8B8B9A]">
-            Instala el tracker para recibir insights personalizados
-          </p>
+        <div className="py-10 text-center relative z-10 flex flex-col items-center justify-center space-y-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-[#10B981]/20 blur-2xl rounded-full scale-150 animate-pulse" />
+            <div className="p-4 bg-[#10B98110] border border-[#10B98120] rounded-2xl relative">
+              <Sparkles size={32} className="text-[#10B981]" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-base font-bold text-[#F1F1F5]">IA en espera</p>
+            <p className="text-sm text-[#8B8B9A] max-w-[240px] mx-auto leading-relaxed">
+              Instala el tracker para que nuestra IA pueda analizar tu tráfico y salud SEO en tiempo real.
+            </p>
+          </div>
+          <button className="text-sm font-bold text-[#10B981] pt-2 hover:underline">Ver instrucciones de instalación →</button>
         </div>
       )}
 
@@ -65,7 +76,7 @@ export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
                 const effort = effortConfig[action.effort] ?? effortConfig.medium;
                 return (
                   <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-[#111118] border border-[#1E1E2A]">
-                    <div className="w-5 h-5 rounded-full bg-[#6366F115] text-[#6366F1] text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-5 h-5 rounded-full bg-[#10B98115] text-[#10B981] text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
                       {action.step}
                     </div>
                     <div className="flex-1 min-w-0">

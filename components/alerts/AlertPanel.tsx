@@ -58,9 +58,9 @@ const severityConfig = {
   info: {
     label: 'Información',
     icon: AlertTriangle,
-    color: 'text-[#6366F1]',
-    bg: 'bg-[#6366F115]',
-    border: 'border-[#6366F130]',
+    color: 'text-[#10B981]',
+    bg: 'bg-[#10B98115]',
+    border: 'border-[#10B98130]',
   },
 };
 
@@ -154,7 +154,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
               {alert.affected_path && (
                 <div className="flex items-center gap-2 p-3 bg-[#14141C] rounded-lg border border-[#1E1E2A]">
                   <span className="text-xs text-[#8B8B9A]">URL afectada:</span>
-                  <span className="font-mono text-xs text-[#6366F1] truncate">{alert.affected_path}</span>
+                  <span className="font-mono text-xs text-[#10B981] truncate">{alert.affected_path}</span>
                 </div>
               )}
 
@@ -182,7 +182,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
               {alert.ai_analysis_status === 'pending' && (
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Sparkles size={14} className="text-[#6366F1] animate-pulse" />
+                    <Sparkles size={14} className="text-[#10B981] animate-pulse" />
                     <span className="text-xs text-[#8B8B9A]">Claude está analizando este problema...</span>
                   </div>
                   <Skeleton className="h-4 w-full bg-[#1E1E2A]" />
@@ -199,10 +199,10 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
               {alert.ai_analysis_status === 'generated' && alert.ai_analysis && (
                 <>
                   {/* Summary */}
-                  <div className="p-4 bg-[#6366F108] border border-[#6366F120] rounded-lg">
+                  <div className="p-4 bg-[#10B98108] border border-[#10B98120] rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
-                      <Sparkles size={12} className="text-[#6366F1]" />
-                      <span className="text-[10px] text-[#6366F1] font-medium uppercase tracking-wider">Análisis IA</span>
+                      <Sparkles size={12} className="text-[#10B981]" />
+                      <span className="text-[10px] text-[#10B981] font-medium uppercase tracking-wider">Análisis IA</span>
                     </div>
                     <p className="text-sm text-[#C5C5D0] leading-relaxed">
                       {alert.ai_analysis.summary}
@@ -241,7 +241,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                               className="p-3 bg-[#14141C] border border-[#1E1E2A] rounded-lg"
                             >
                               <div className="flex items-start gap-3">
-                                <div className="w-5 h-5 rounded-full bg-[#6366F115] text-[#6366F1] text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                <div className="w-5 h-5 rounded-full bg-[#10B98115] text-[#10B981] text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
                                   {action.step}
                                 </div>
                                 <div className="flex-1">
@@ -285,7 +285,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
               {onAcknowledge && alert.status === 'active' && (
                 <button
                   onClick={() => onAcknowledge(alert.id)}
-                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#6366F115] border border-[#6366F130] text-[#6366F1] text-xs font-medium hover:bg-[#6366F125] transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#10B98115] border border-[#10B98130] text-[#10B981] text-xs font-medium hover:bg-[#10B98125] transition-colors"
                 >
                   <CheckCircle size={13} />
                   Reconocida

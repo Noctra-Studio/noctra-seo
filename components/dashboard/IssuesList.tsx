@@ -35,54 +35,69 @@ const ISSUE_TYPE_LABELS: Record<string, string> = {
 
 export function IssuesList({ issues, onFix }: IssuesListProps) {
   const criticalIssues = issues.filter(i => i.severity === 'critical');
+  const hasData = criticalIssues.length > 0;
 
   return (
-    <div className="bg-[#14141C] border border-[#1E1E2A] rounded-xl p-5">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xs text-[#8B8B9A] font-medium uppercase tracking-wider">
-          Issues críticos
+    <div className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 hover:border-[#F59E0B50] transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl h-full flex flex-col group">
+      <div className="flex items-center justify-between mb-8">
+        <h3 className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">
+          Issues Críticos
         </h3>
-        {criticalIssues.length > 0 && (
-          <span className="text-[10px] bg-[#EF444415] text-[#EF4444] px-1.5 py-0.5 rounded font-medium">
-            {criticalIssues.length} crítico{criticalIssues.length > 1 ? 's' : ''}
+        {hasData && (
+          <span className="text-[10px] font-bold text-[#EF4444] bg-[#EF444415] px-2 py-0.5 rounded uppercase tracking-wider">
+            {criticalIssues.length} detectado{criticalIssues.length > 1 ? 's' : ''}
           </span>
         )}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3 flex-1">
         {criticalIssues.slice(0, 5).map((issue, i) => (
           <div
             key={i}
-            className="flex items-start gap-3 p-3 rounded-lg bg-[#EF444408] border border-[#EF444418] group"
+            className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-[#EF444430] transition-all group/issue cursor-pointer"
           >
-            <XCircle size={15} className="text-[#EF4444] mt-0.5 shrink-0" />
+            <div className="p-2 bg-[#EF444410] rounded-lg mt-0.5">
+              <XCircle size={16} className="text-[#EF4444]" />
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-[#F1F1F5]">
-                {ISSUE_TYPE_LABELS[issue.type] ?? issue.type}
-              </p>
-              <p className="text-xs text-[#8B8B9A] mt-0.5 line-clamp-2">{issue.detail}</p>
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-sm font-bold text-[#F1F1F5] truncate">
+                  {ISSUE_TYPE_LABELS[issue.type] ?? issue.type}
+                </p>
+                {onFix && (
+                  <button
+                    onClick={() => onFix(issue)}
+                    className="shrink-0 text-[10px] font-bold text-[#10B981] hover:text-[#0D9469] flex items-center gap-1 uppercase tracking-tighter opacity-0 group-hover/issue:opacity-100 transition-opacity"
+                  >
+                    Reparar
+                    <ChevronRight size={12} />
+                  </button>
+                )}
+              </div>
+              <p className="text-xs text-[#8B8B9A] mt-1 line-clamp-2 leading-relaxed">{issue.detail}</p>
               {issue.path && (
-                <p className="text-[10px] font-mono text-[#6366F1] mt-1 truncate">{issue.path}</p>
+                <p className="text-[10px] font-mono font-bold text-[#4B4B5A] mt-2 truncate bg-white/[0.02] px-1.5 py-0.5 rounded-md w-fit">
+                  {issue.path}
+                </p>
               )}
             </div>
-            {onFix && (
-              <button
-                onClick={() => onFix(issue)}
-                className="shrink-0 text-xs text-[#6366F1] hover:text-[#4F52D4] flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                Fix
-                <ChevronRight size={12} />
-              </button>
-            )}
           </div>
         ))}
 
-        {criticalIssues.length === 0 && (
-          <div className="py-6 text-center">
-            <div className="w-8 h-8 bg-[#10B98115] rounded-full flex items-center justify-center mx-auto mb-2">
-              <span className="text-[#10B981] text-sm">✓</span>
+        {!hasData && (
+          <div className="flex-1 flex flex-col items-center justify-center py-10 space-y-4 opacity-50 group-hover:opacity-100 transition-opacity">
+            <div className="relative">
+              <div className="absolute inset-0 bg-[#10B981]/20 blur-2xl rounded-full scale-150" />
+              <div className="p-4 bg-[#10B98110] border border-[#10B98120] rounded-2xl relative">
+                <span className="text-2xl text-[#10B981]">✓</span>
+              </div>
             </div>
-            <p className="text-sm text-[#8B8B9A]">Sin issues críticos</p>
+            <div className="space-y-1 text-center">
+              <p className="text-sm font-bold text-[#F1F1F5]">Todo en orden</p>
+              <p className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest leading-relaxed">
+                No se han detectado issues críticos
+              </p>
+            </div>
           </div>
         )}
       </div>

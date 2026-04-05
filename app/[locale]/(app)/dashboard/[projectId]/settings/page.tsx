@@ -99,7 +99,7 @@ export default function SettingsPage() {
         {/* Site ID */}
         <div className="flex items-center gap-2 p-3 bg-[#14141C] border border-[#1E1E2A] rounded-lg">
           <span className="text-xs text-[#8B8B9A] shrink-0">Site ID:</span>
-          <code className="flex-1 font-mono text-sm text-[#6366F1]">{domain?.site_id}</code>
+          <code className="flex-1 font-mono text-sm text-[#10B981]">{domain?.site_id}</code>
           <button onClick={() => copy(domain?.site_id ?? '', 'siteid')} className="text-[#8B8B9A] hover:text-[#F1F1F5] transition-colors">
             {copied === 'siteid' ? <Check size={14} className="text-[#10B981]" /> : <Copy size={14} />}
           </button>
@@ -168,7 +168,7 @@ export default function SettingsPage() {
                 type="number"
                 value={thresholds[key] ?? ''}
                 onChange={e => setThresholds(t => ({ ...t, [key]: parseFloat(e.target.value) }))}
-                className="w-full bg-[#14141C] border border-[#1E1E2A] rounded-lg px-3 py-2 text-sm text-[#F1F1F5] font-mono focus:outline-none focus:border-[#6366F1] transition-colors"
+                className="w-full bg-[#14141C] border border-[#1E1E2A] rounded-lg px-3 py-2 text-sm text-[#F1F1F5] font-mono focus:outline-none focus:border-[#10B981] transition-colors"
               />
             </div>
           ))}
@@ -177,7 +177,7 @@ export default function SettingsPage() {
         <button
           onClick={saveThresholds}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-[#6366F1] text-white text-sm font-medium rounded-lg hover:bg-[#4F52D4] transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-[#10B981] text-white text-sm font-medium rounded-lg hover:bg-[#0D9469] transition-colors disabled:opacity-50"
         >
           {saving ? <RefreshCw size={14} className="animate-spin" /> : saved ? <Check size={14} /> : null}
           {saved ? 'Guardado' : 'Guardar cambios'}

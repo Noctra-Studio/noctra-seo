@@ -15,6 +15,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Noctra SEO',
   description: 'Plataforma de inteligencia SEO y GEO para agencias y SMBs',
+  icons: {
+    icon: [
+      { url: '/favicon-light.svg', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-dark.svg', media: '(prefers-color-scheme: dark)' },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

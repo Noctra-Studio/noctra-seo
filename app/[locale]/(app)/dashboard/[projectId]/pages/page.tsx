@@ -152,17 +152,17 @@ export default function PagesPage() {
                     <div className="px-4 pb-4 pt-1 bg-[#0D0D14] border-t border-[#1E1E2A] space-y-2">
                       {page.title && (
                         <p className="text-xs text-[#8B8B9A]">
-                          <span className="text-[#6366F1]">Title:</span> {page.title}
+                          <span className="text-[#10B981]">Title:</span> {page.title}
                         </p>
                       )}
                       {page.h1 && (
                         <p className="text-xs text-[#8B8B9A]">
-                          <span className="text-[#6366F1]">H1:</span> {page.h1}
+                          <span className="text-[#10B981]">H1:</span> {page.h1}
                         </p>
                       )}
                       {page.word_count && (
                         <p className="text-xs text-[#8B8B9A]">
-                          <span className="text-[#6366F1]">Palabras:</span> {page.word_count}
+                          <span className="text-[#10B981]">Palabras:</span> {page.word_count}
                         </p>
                       )}
                       {page.issues?.length > 0 && (
@@ -173,7 +173,7 @@ export default function PagesPage() {
                                 'mt-0.5 shrink-0',
                                 issue.severity === 'critical' ? 'text-[#EF4444]' :
                                 issue.severity === 'warning' ? 'text-[#F59E0B]' :
-                                'text-[#6366F1]'
+                                'text-[#10B981]'
                               )}>●</span>
                               {issue.detail}
                             </div>

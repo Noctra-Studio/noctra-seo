@@ -28,6 +28,10 @@ export async function signUp(formData: FormData, locale: string) {
   const password = formData.get('password') as string;
   const fullName = (formData.get('fullName') as string)?.trim();
 
+  console.log('--- Auth Debug ---');
+  console.log('Attempting signup for:', email);
+  console.log('Email length:', email?.length);
+  
   const { error } = await supabase.auth.signUp({
     email,
     password,
@@ -39,6 +43,7 @@ export async function signUp(formData: FormData, locale: string) {
   });
 
   if (error) {
+    console.error('Supabase Auth Error:', error.message);
     return { error: error.message };
   }
 

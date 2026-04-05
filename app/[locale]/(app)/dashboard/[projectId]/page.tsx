@@ -197,30 +197,43 @@ export default function DashboardOverview() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-32 bg-[#14141C] border border-[#1E1E2A] rounded-xl animate-pulse" />
-        ))}
+      <div className="p-8 space-y-10">
+        <div className="flex items-center justify-between pb-4">
+          <div className="space-y-2">
+            <div className="h-10 w-64 bg-[#14141C] rounded-lg animate-pulse" />
+            <div className="h-4 w-48 bg-[#14141C] rounded-lg animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-32 bg-[#14141C] border border-[#1E1E2A] rounded-2xl animate-pulse shadow-sm" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+           {Array.from({ length: 2 }).map((_, i) => (
+            <div key={i} className="h-80 bg-[#14141C] border border-[#1E1E2A] rounded-2xl animate-pulse shadow-sm" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
     <>
-      <div className="p-6 space-y-5 pb-20 md:pb-6">
+      <div className="p-8 space-y-10 pb-20 md:pb-12 max-w-[1600px] mx-auto">
         {/* Header row */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
           <div>
-            <h1 className="text-lg font-semibold text-[#F1F1F5]">
+            <h1 className="text-4xl font-extrabold text-[#F1F1F5] tracking-tighter sm:text-5xl">
               {domain?.hostname ?? 'Dashboard'}
             </h1>
-            <p className="text-xs text-[#8B8B9A] mt-0.5">Resumen del rendimiento</p>
+            <p className="text-lg text-[#8B8B9A] mt-2 font-medium">Resumen del rendimiento y salud SEO</p>
           </div>
           <DateRangePicker value={days} onChange={setDays} />
         </div>
 
         {/* Fila 1 — 4 Score cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
           <ScoreCard
             title="SEO Score"
             score={data?.seoScore ?? 0}
@@ -243,26 +256,37 @@ export default function DashboardOverview() {
           />
 
           <div
-            className="bg-[#14141C] border border-[#1E1E2A] rounded-xl p-5 flex flex-col gap-3 hover:border-[#2A2A38] transition-colors cursor-pointer"
+            className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 flex flex-col gap-6 hover:border-[#10B98150] transition-all cursor-pointer shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl group"
             onClick={() => {/* navigate to alerts */}}
           >
-            <div className="flex items-start justify-between">
-              <span className="text-xs text-[#8B8B9A] font-medium uppercase tracking-wider">Alertas Activas</span>
-              <Bell size={14} className="text-[#8B8B9A]" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">Alertas Activas</span>
+              <div className="p-2 bg-white/[0.03] rounded-lg group-hover:bg-[#10B98110] transition-colors">
+                <Bell size={18} className="text-[#8B8B9A] group-hover:text-[#10B981]" />
+              </div>
             </div>
-            <div className="flex items-end gap-3">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-3xl text-[#EF4444]">
+            
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-mono font-bold text-[#EF4444]">
                     {data?.activeAlerts.critical ?? 0}
                   </span>
-                  <span className="text-xs text-[#EF4444] bg-[#EF444415] px-1.5 py-0.5 rounded">Críticas</span>
+                  <span className="text-xs font-bold text-[#EF4444] bg-[#EF444415] px-2.5 py-1 rounded-md uppercase tracking-wider">Críticas</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-xl text-[#F59E0B]">
+                <div className="w-16 h-1.5 bg-[#EF444415] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#EF4444] w-2/3" />
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl font-mono font-bold text-[#F59E0B]">
                     {data?.activeAlerts.warning ?? 0}
                   </span>
-                  <span className="text-xs text-[#F59E0B] bg-[#F59E0B15] px-1.5 py-0.5 rounded">Warnings</span>
+                  <span className="text-xs font-bold text-[#F59E0B] bg-[#F59E0B15] px-2.5 py-1 rounded-md uppercase tracking-wider">Warnings</span>
+                </div>
+                <div className="w-16 h-1.5 bg-[#F59E0B15] rounded-full overflow-hidden">
+                  <div className="h-full bg-[#F59E0B] w-1/3" />
                 </div>
               </div>
             </div>
@@ -270,7 +294,7 @@ export default function DashboardOverview() {
         </div>
 
         {/* Fila 2 — Traffic chart + Top pages */}
-        <div className="grid grid-cols-1 xl:grid-cols-12 gap-4">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           <div className="xl:col-span-8">
             <TrafficChart data={data?.trafficChart ?? []} />
           </div>
@@ -280,11 +304,11 @@ export default function DashboardOverview() {
         </div>
 
         {/* Fila 3 — Issues + AI Insights */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-4">
           <IssuesList
             issues={data?.issues ?? []}
             onFix={(issue) => {
-              // In a real scenario, open the alert that corresponds to this issue
+              // Action logic
             }}
           />
           <AIInsightsCard insight={data?.latestInsight} loading={false} />

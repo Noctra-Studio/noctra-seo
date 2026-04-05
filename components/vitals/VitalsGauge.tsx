@@ -41,40 +41,49 @@ export function VitalsGauge({ lcp, cls, inp }: VitalsGaugeProps) {
     { ...VITALS[2], value: inp ?? null },
   ];
 
-  const allGood = vitals.every(v => getStatus(v.value, v.goodMax, v.poorMin) === 'good');
-  const hasPoor = vitals.some(v => getStatus(v.value, v.goodMax, v.poorMin) === 'poor');
+  const allGood = vitals.every(v => v.value !== null && getStatus(v.value, v.goodMax, v.poorMin) === 'good');
+  const hasPoor = vitals.some(v => v.value !== null && getStatus(v.value, v.goodMax, v.poorMin) === 'poor');
+  const hasData = vitals.some(v => v.value !== null);
 
   return (
-    <div className="bg-[#14141C] border border-[#1E1E2A] rounded-xl p-5 flex flex-col gap-3 hover:border-[#2A2A38] transition-colors">
+    <div className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 flex flex-col gap-6 hover:border-[#10B98150] transition-all cursor-pointer shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl group">
       <div className="flex items-start justify-between">
-        <span className="text-xs text-[#8B8B9A] font-medium uppercase tracking-wider">Core Web Vitals</span>
+        <span className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">Core Web Vitals</span>
         <span className={cn(
-          'text-[10px] font-medium px-2 py-0.5 rounded-full',
+          'text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider',
+          !hasData ? 'text-[#8B8B9A] bg-white/5' :
           allGood ? 'text-[#10B981] bg-[#10B98115]' :
           hasPoor ? 'text-[#EF4444] bg-[#EF444415]' :
           'text-[#F59E0B] bg-[#F59E0B15]'
         )}>
-          {allGood ? 'Pasa Google' : hasPoor ? 'Falla Google' : 'Revisar'}
+          {!hasData ? 'Sin datos' : allGood ? 'Pasa' : hasPoor ? 'Falla' : 'Aviso'}
         </span>
       </div>
 
-      <div className="space-y-2.5">
+      <div className="space-y-4">
         {vitals.map(({ name, value, unit, goodMax, poorMin }) => {
           const status = getStatus(value, goodMax, poorMin);
           const cfg = statusConfig[status];
           const displayValue = value !== null
             ? name === 'CLS'
               ? value.toFixed(3)
-              : `${Math.round(value)}${unit}`
+              : `${(value / (unit === 'ms' ? 1000 : 1)).toFixed(unit === 'ms' ? 1 : 3)}${unit === 'ms' ? 's' : ''}`
             : '—';
 
           return (
-            <div key={name} className="flex items-center gap-3">
-              <span className="text-xs font-mono font-medium text-[#8B8B9A] w-8">{name}</span>
-              <span className={cn('text-sm font-mono font-bold flex-1', cfg.color)}>
-                {displayValue}
-              </span>
-              <div className={cn('w-2 h-2 rounded-full', cfg.dot)} />
+            <div key={name} className="flex items-center justify-between group/vital">
+              <div className="flex items-center gap-3">
+                <div className={cn('w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]', cfg.dot)} />
+                <span className="text-sm font-bold text-[#8B8B9A]">{name}</span>
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className={cn('text-lg font-mono font-bold', cfg.color)}>
+                  {displayValue}
+                </span>
+                <span className="text-[10px] font-bold text-[#8B8B9A] uppercase opacity-0 group-hover/vital:opacity-100 transition-opacity">
+                  {cfg.label}
+                </span>
+              </div>
             </div>
           );
         })}

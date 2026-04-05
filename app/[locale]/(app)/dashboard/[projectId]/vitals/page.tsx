@@ -20,7 +20,7 @@ interface VitalsRow {
 }
 
 const METRIC_CONFIG = [
-  { key: 'lcp_p75' as const, label: 'LCP', unit: 'ms', good: 2500, poor: 4000, color: '#6366F1' },
+  { key: 'lcp_p75' as const, label: 'LCP', unit: 'ms', good: 2500, poor: 4000, color: '#10B981' },
   { key: 'cls_p75' as const, label: 'CLS', unit: '', good: 0.1, poor: 0.25, color: '#10B981', decimals: 3 },
   { key: 'inp_p75' as const, label: 'INP', unit: 'ms', good: 200, poor: 500, color: '#F59E0B' },
   { key: 'fcp_p75' as const, label: 'FCP', unit: 'ms', good: 1800, poor: 3000, color: '#EC4899' },

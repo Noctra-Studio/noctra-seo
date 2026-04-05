@@ -41,27 +41,27 @@ export function OnboardingStep({
             key={i}
             className={cn(
               'h-1 rounded-full transition-all duration-300',
-              i < step ? 'bg-[#6366F1]' : i === step - 1 ? 'bg-[#6366F1]' : 'bg-[#1E1E2A]',
+              i < step ? 'bg-[#10B981]' : i === step - 1 ? 'bg-[#10B981]' : 'bg-[#1E1E2A]',
               i === step - 1 ? 'flex-[2]' : 'flex-1'
             )}
           />
         ))}
       </div>
 
-      <div className="mb-1 text-xs text-[#8B8B9A]">Paso {step} de {totalSteps}</div>
-      <h1 className="text-2xl font-semibold text-[#F1F1F5] mb-1">{title}</h1>
-      {subtitle && <p className="text-sm text-[#8B8B9A] mb-8">{subtitle}</p>}
-      {!subtitle && <div className="mb-6" />}
+      <div className="mb-2 text-sm text-[#8B8B9A]">Paso {step} de {totalSteps}</div>
+      <h1 className="text-4xl font-bold text-[#F1F1F5] mb-2 tracking-tight">{title}</h1>
+      {subtitle && <p className="text-lg text-[#8B8B9A] mb-10 leading-relaxed">{subtitle}</p>}
+      {!subtitle && <div className="mb-8" />}
 
-      <div className="space-y-4">
+      <div className="space-y-10">
         {children}
       </div>
 
-      <div className="flex gap-3 mt-8">
+      <div className="flex gap-4 mt-12">
         {onBack && (
           <button
             onClick={onBack}
-            className="px-5 py-2.5 rounded-lg text-sm text-[#8B8B9A] hover:text-[#F1F1F5] hover:bg-[#1A1A24] transition-colors border border-[#1E1E2A]"
+            className="px-6 py-3.5 rounded-xl text-base text-[#8B8B9A] hover:text-[#F1F1F5] hover:bg-[#1A1A24] transition-colors border border-[#1E1E2A]"
           >
             Atrás
           </button>
@@ -69,7 +69,7 @@ export function OnboardingStep({
         <button
           onClick={onNext}
           disabled={loading}
-          className="flex-1 px-5 py-2.5 rounded-lg text-sm font-medium bg-[#6366F1] text-white hover:bg-[#4F52D4] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex-1 px-6 py-3.5 rounded-xl text-base font-semibold bg-[#10B981] text-white hover:bg-[#0D9469] transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-[#10B98120]"
         >
           {loading ? 'Guardando...' : nextLabel}
         </button>

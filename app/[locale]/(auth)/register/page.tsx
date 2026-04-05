@@ -1,4 +1,5 @@
 import { AuthForm } from '@/components/auth/AuthForm';
+import { DashboardPreview } from '@/components/auth/DashboardPreview';
 import { signUp } from '@/lib/supabase/actions';
 
 interface PageProps {
@@ -16,14 +17,19 @@ export default async function RegisterPage({ params }: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] flex items-center justify-center relative overflow-hidden">
-      {/* Decorative background gradients */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#10b981]/5 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#6366f1]/5 blur-[120px] rounded-full" />
+    <div className="flex min-h-screen bg-[#050505] overflow-hidden">
+      {/* Left side: Auth Form */}
+      <div className="flex-1 flex items-center justify-center relative">
+        <div className="absolute inset-0 pointer-events-none opacity-20">
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#10b981]/10 blur-[120px] rounded-full" />
+        </div>
+        <AuthForm type="register" locale={locale} onSubmit={handleAction} />
       </div>
 
-      <AuthForm type="register" locale={locale} onSubmit={handleAction} />
+      {/* Right side: Dashboard Preview */}
+      <div className="hidden lg:flex flex-1 border-l border-white/[0.05]">
+        <DashboardPreview />
+      </div>
     </div>
   );
 }

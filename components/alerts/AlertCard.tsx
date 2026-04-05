@@ -25,7 +25,7 @@ const ALERT_TYPE_LABELS: Record<string, string> = {
 const severityConfig = {
   critical: { icon: XCircle, color: 'text-[#EF4444]', bg: 'bg-[#EF444408]', border: 'border-[#EF444418]' },
   warning: { icon: AlertTriangle, color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B08]', border: 'border-[#F59E0B18]' },
-  info: { icon: AlertTriangle, color: 'text-[#6366F1]', bg: 'bg-[#6366F108]', border: 'border-[#6366F118]' },
+  info: { icon: AlertTriangle, color: 'text-[#10B981]', bg: 'bg-[#10B98108]', border: 'border-[#10B98118]' },
 };
 
 export function AlertCard({ alert, onClick }: AlertCardProps) {
@@ -47,7 +47,7 @@ export function AlertCard({ alert, onClick }: AlertCardProps) {
           {ALERT_TYPE_LABELS[alert.type] ?? alert.type}
         </p>
         {alert.affected_path && (
-          <p className="text-xs font-mono text-[#6366F1] mt-0.5 truncate">{alert.affected_path}</p>
+          <p className="text-xs font-mono text-[#10B981] mt-0.5 truncate">{alert.affected_path}</p>
         )}
         {alert.metric_name && alert.metric_value !== undefined && alert.metric_value !== null && (
           <p className="text-xs text-[#8B8B9A] mt-1">
@@ -61,7 +61,7 @@ export function AlertCard({ alert, onClick }: AlertCardProps) {
           <Clock size={10} />
           {detectedDate.toLocaleDateString('es', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
           {alert.ai_analysis_status === 'generated' && (
-            <span className="text-[#6366F1] ml-1">· Análisis IA listo</span>
+            <span className="text-[#10B981] ml-1">· Análisis IA listo</span>
           )}
         </div>
       </div>
