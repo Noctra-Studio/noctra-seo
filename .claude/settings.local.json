@@ -1,7 +1,23 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)"
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init --yes --base-color slate)",
+      "Bash(npx shadcn@latest init -y)",
+      "Bash(npx shadcn@latest add button badge card separator skeleton tabs switch select toast dialog --yes)",
+      "Bash(npx shadcn@latest add button badge card separator skeleton tabs switch select sonner dialog --yes)",
+      "Bash(npx tsc:*)",
+      "Bash(npx next:*)",
+      "Bash(ls /Users/manu/Documents/1.Projects/Noctra-studio/website/noctra-seo/*.ts)",
+      "Bash(ls /Users/manu/Documents/1.Projects/Noctra-studio/website/noctra-seo/*.tsx)",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\(p.get\\('version'\\)\\); [print\\(k\\) for k in p.get\\('exports',{}\\).keys\\(\\)]\")",
+      "WebFetch(domain:crm.noctra.studio)",
+      "Bash(gh repo:*)",
+      "Bash(gh api:*)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(f['path']\\) for f in data['tree'] if f['type']=='blob']\")",
+      "Bash(python3 -c \"import json,sys,base64; d=json.load\\(sys.stdin\\); print\\(base64.b64decode\\(d['content']\\).decode\\(\\)\\)\")",
+      "Bash(python3 -c ':*)"
     ]
   }
 }

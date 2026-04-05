@@ -1,0 +1,290 @@
+{
+  "nav": {
+    "overview": "Overview",
+    "pages": "Pages",
+    "vitals": "Core Web Vitals",
+    "keywords": "Keywords",
+    "geo": "GEO",
+    "alerts": "Alerts",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "seoScore": "SEO Score",
+    "coreWebVitals": "Core Web Vitals",
+    "organicTraffic": "Organic Traffic",
+    "activeAlerts": "Active Alerts",
+    "vsLastWeek": "vs last week",
+    "viewAll": "View all",
+    "analyzeWithAI": "Analyze with AI",
+    "trafficByChannel": "Traffic by channel",
+    "topPages": "Top pages",
+    "criticalIssues": "Critical issues",
+    "howToFix": "How to fix it",
+    "aiInsights": "AI Insights",
+    "scrollDepth": "Scroll depth",
+    "timeOnPage": "Time on page",
+    "bounceRate": "Bounce rate"
+  },
+  "alerts": {
+    "critical": "Critical",
+    "warning": "Warning",
+    "info": "Info",
+    "active": "Active",
+    "acknowledged": "Acknowledged",
+    "resolved": "Resolved",
+    "acknowledge": "Mark as acknowledged",
+    "viewAffectedPage": "View affected page",
+    "ignore": "Ignore",
+    "analyzing": "Claude is analyzing this issue...",
+    "impact": "This issue is impacting you:",
+    "howToFix": "How to fix it:",
+    "expectedResult": "Expected result:",
+    "effort": {
+      "low": "Easy",
+      "medium": "Medium",
+      "high": "Complex"
+    }
+  },
+  "onboarding": {
+    "title": "Set up your account",
+    "step1": "Your business",
+    "step2": "Audience & competitors",
+    "step3": "SEO goals",
+    "step4": "Alerts",
+    "step5": "Install tracker",
+    "next": "Next",
+    "back": "Back",
+    "finish": "Finish",
+    "skip": "Skip for now"
+  },
+  "vitals": {
+    "lcp": "Largest Contentful Paint",
+    "cls": "Cumulative Layout Shift",
+    "inp": "Interaction to Next Paint",
+    "fcp": "First Contentful Paint",
+    "ttfb": "Time to First Byte",
+    "passes": "Passes",
+    "fails": "Fails",
+    "googleThreshold": "Google threshold"
+  },
+  "landing": {
+    "nav": {
+      "howItWorks": "How it works",
+      "features": "Features",
+      "alerts": "Alerts",
+      "forWho": "For who",
+      "pricing": "Pricing",
+      "login": "Sign in",
+      "menuOpen": "Open menu",
+      "menuClose": "Close menu"
+    },
+    "hero": {
+      "label": "NOCTRA SEO/GEO — SEARCH INTELLIGENCE",
+      "headline": "Understand how your\naudience finds you.",
+      "subheadline": "A lightweight tracker on your site. Real SEO, speed and AI visibility metrics. Recommendations that explain the problem, the impact and how to fix it.",
+      "ctaPrimary": "Install the tracker →",
+      "ctaSecondary": "See how it works ↓",
+      "trustLine": "✦ Google Search Console  ·  ✦ ChatGPT  ·  ✦ Gemini  ·  ✦ Perplexity",
+      "trustItems": ["No credit card", "No cookies", "Cancel anytime"]
+    },
+    "problem": {
+      "label": "THE PROBLEM",
+      "heading": "It's not that you have no traffic.\nYou just don't know why.",
+      "pairs": [
+        {
+          "problem": "You installed Google Analytics but the reports don't tell you what to do.",
+          "solution": "Noctra SEO translates metrics into concrete actions prioritized by impact."
+        },
+        {
+          "problem": "Your Core Web Vitals fail but you don't know what's causing the slowness.",
+          "solution": "The tracker measures real CWV from the user's browser — not estimates."
+        },
+        {
+          "problem": "Your pages have SEO issues you can't see without manual auditing.",
+          "solution": "Each visit detects issues in real time: titles, metas, H1, schema, canonical."
+        },
+        {
+          "problem": "You don't know if appearing in ChatGPT or Perplexity affects your business.",
+          "solution": "The GEO module measures your visibility in AI engines and tells you how to improve it."
+        },
+        {
+          "problem": "You receive alerts that something failed. Without context on what to do.",
+          "solution": "Each alert includes Claude's analysis: impact, root cause and steps to resolve it."
+        }
+      ]
+    },
+    "howItWorks": {
+      "label": "HOW IT WORKS",
+      "heading": "One script. Real data. AI that interprets.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Install the tracker (30 seconds)",
+          "desc": "Add one line of code to your site. Compatible with any platform: HTML, WordPress, Shopify, Next.js. No cookies, no performance impact. The script weighs less than 8KB."
+        },
+        {
+          "number": "02",
+          "title": "Real data from the first pageview",
+          "desc": "The tracker captures on-page SEO signals, real Core Web Vitals from the user's browser, behavior and traffic channel — on every visit."
+        },
+        {
+          "number": "03",
+          "title": "Automatic issue detection",
+          "desc": "Each pageview evaluates the page against 15 SEO rules. Issues are classified by severity and accumulated with real traffic data to prioritize what to fix first."
+        },
+        {
+          "number": "04",
+          "title": "Intelligent alerts with Claude",
+          "desc": "When a metric drops, Claude analyzes your business context and generates: what happened, why it matters for your industry, and how to resolve it step by step."
+        },
+        {
+          "number": "05",
+          "title": "Dashboard with actionable recommendations",
+          "desc": "Everything in one place: historical metrics, prioritized issues, keywords from Search Console, and visibility score in ChatGPT, Gemini and Perplexity."
+        }
+      ]
+    },
+    "demo": {
+      "label": "THE DASHBOARD",
+      "heading": "Metrics that explain. Actions that resolve.",
+      "subheading": "You don't just see what's happening. You see why it matters and what to do about it.",
+      "tabs": {
+        "overview": "Overview",
+        "issues": "SEO Issues",
+        "alert": "AI Alert"
+      }
+    },
+    "features": {
+      "label": "FEATURES",
+      "heading": "Everything you need to understand your search presence.",
+      "comingSoon": "Coming soon"
+    },
+    "alerts": {
+      "label": "INTELLIGENT ALERTS",
+      "heading": "You don't just know something failed.\nYou know exactly what to do.",
+      "para1": "Most tools send you a notification saying 'your LCP exceeded the threshold'. No context. No solution.",
+      "para2": "Noctra SEO uses Claude to analyze each alert with your business context: what type of company you are, which are your critical pages, and what goals you have configured.",
+      "channels": {
+        "email": "Email — immediate critical alerts + daily digest",
+        "whatsapp": "WhatsApp — for those who need to know right away",
+        "slack": "Slack — direct integration to your team channel",
+        "push": "Push — browser notifications"
+      },
+      "criticalLabel": "Critical: immediate notification",
+      "warningLabel": "Warning: configurable daily digest"
+    },
+    "comparativa": {
+      "label": "COMPARISON",
+      "heading": "Not another metrics dashboard.",
+      "subheading": "The difference is whether the tool interprets the data or leaves you alone with it.",
+      "columns": {
+        "generic": "Generic tool",
+        "ga": "Google Analytics",
+        "noctra": "Noctra SEO"
+      },
+      "recommended": "Recommended",
+      "rows": [
+        "Real CWV data (not estimated)",
+        "SEO issue detection on every visit",
+        "Alerts with AI analysis",
+        "Business context for recommendations",
+        "GEO visibility (ChatGPT, Gemini)",
+        "Search Console integration",
+        "Behavior + traffic channels",
+        "Cookie-free script (GDPR-friendly)",
+        "Weighs <8KB (no performance impact)",
+        "Exportable reports for clients"
+      ]
+    },
+    "forWho": {
+      "label": "FOR WHO",
+      "heading": "For those who need to understand their search, not just measure it.",
+      "cards": [
+        {
+          "title": "Digital agencies",
+          "challenge": "Managing SEO for multiple clients with different sites, industries and goals.",
+          "solution": "One tracker per domain. Alerts per client. PDF reports ready to present."
+        },
+        {
+          "title": "SMBs with web presence",
+          "challenge": "They have a working site but don't know if SEO is working for them or against them.",
+          "solution": "Real visibility without needing to be an SEO expert. AI explains everything in business language."
+        },
+        {
+          "title": "Independent professionals",
+          "challenge": "Doctors, lawyers, accountants who need to rank locally but don't have a technical team.",
+          "solution": "Install the tracker in 30 seconds. Receive intelligent alerts with clear steps to resolve them."
+        },
+        {
+          "title": "Startups and SaaS",
+          "challenge": "Site speed and technical SEO directly affect organic CAC. They can't afford to ignore it.",
+          "solution": "Real CWV + technical issues detected automatically. Data for fast decisions."
+        }
+      ]
+    },
+    "pricing": {
+      "label": "PRICING",
+      "heading": "Early access — internal use.",
+      "note": "Noctra SEO is currently in internal use at Noctra Studio. If you want early access for your agency or business, reach out directly.",
+      "mostPopular": "Most popular",
+      "perSeat": "/seat/mo",
+      "trialNote": "14-day free trial",
+      "currencyNote": "Prices in USD.",
+      "cta": {
+        "free": "Sign up →",
+        "paid": "Start free trial →",
+        "agency": "Contact →"
+      },
+      "plans": [
+        {
+          "name": "Free",
+          "price": "$0",
+          "period": "/mo",
+          "features": ["1 seat", "1 site", "10,000 pageviews/mo", "10 GEO checks/mo", "On-demand crawl (1/mo)"],
+          "cta": "free"
+        },
+        {
+          "name": "Starter",
+          "price": "$19",
+          "period": "/seat/mo",
+          "features": ["3 seats", "3 sites", "100,000 pageviews/mo", "50 GEO checks/mo", "On-demand crawl (5/mo)", "Email + push alerts"],
+          "cta": "paid"
+        },
+        {
+          "name": "Pro",
+          "price": "$39",
+          "period": "/seat/mo",
+          "features": ["10 seats", "10 sites", "500,000 pageviews/mo", "200 GEO checks/mo", "Unlimited crawl", "Email + push + WhatsApp + Slack alerts", "Exportable PDF reports"],
+          "cta": "paid",
+          "highlighted": true
+        },
+        {
+          "name": "Agency",
+          "price": "$79",
+          "period": "/seat/mo",
+          "features": ["Unlimited seats", "Unlimited sites", "2M pageviews/mo", "1,000 GEO checks/mo", "Everything in Pro", "Dedicated onboarding"],
+          "cta": "agency"
+        }
+      ]
+    },
+    "cta": {
+      "label": "START TODAY",
+      "heading": "Your site already has data.\nIt just needs someone to interpret it.",
+      "subheading": "Install the tracker in 30 seconds. The first data arrives with the first visit.",
+      "button": "Install the tracker free →",
+      "trust": "✦ No credit card  ·  ✦ No cookies  ·  ✦ Cancel anytime"
+    },
+    "footer": {
+      "tagline": "Engineering Clarity — Search Edition",
+      "copyright": "© 2025 Noctra Studio · Querétaro, Mexico",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Use",
+      "sections": {
+        "product": "Product",
+        "ecosystem": "Noctra Studio",
+        "contact": "Contact"
+      }
+    }
+  }
+}

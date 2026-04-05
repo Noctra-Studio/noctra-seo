@@ -1,0 +1,290 @@
+{
+  "nav": {
+    "overview": "Resumen",
+    "pages": "Páginas",
+    "vitals": "Core Web Vitals",
+    "keywords": "Palabras clave",
+    "geo": "GEO",
+    "alerts": "Alertas",
+    "reports": "Reportes",
+    "settings": "Configuración"
+  },
+  "dashboard": {
+    "seoScore": "Puntuación SEO",
+    "coreWebVitals": "Core Web Vitals",
+    "organicTraffic": "Tráfico orgánico",
+    "activeAlerts": "Alertas activas",
+    "vsLastWeek": "vs semana anterior",
+    "viewAll": "Ver todas",
+    "analyzeWithAI": "Analizar con IA",
+    "trafficByChannel": "Tráfico por canal",
+    "topPages": "Top páginas",
+    "criticalIssues": "Problemas críticos",
+    "howToFix": "Cómo solucionarlo",
+    "aiInsights": "Insights de IA",
+    "scrollDepth": "Profundidad de navegación",
+    "timeOnPage": "Tiempo en la página",
+    "bounceRate": "Porcentaje de rebote"
+  },
+  "alerts": {
+    "critical": "Crítica",
+    "warning": "Advertencia",
+    "info": "Información",
+    "active": "Activa",
+    "acknowledged": "Reconocida",
+    "resolved": "Resuelta",
+    "acknowledge": "Marcar como reconocida",
+    "viewAffectedPage": "Ver página afectada",
+    "ignore": "Ignorar",
+    "analyzing": "Claude está analizando este problema...",
+    "impact": "Este problema te está impactando en:",
+    "howToFix": "Cómo solucionarlo:",
+    "expectedResult": "Resultado esperado:",
+    "effort": {
+      "low": "Fácil",
+      "medium": "Medio",
+      "high": "Compleja"
+    }
+  },
+  "onboarding": {
+    "title": "Configura tu cuenta",
+    "step1": "Tu negocio",
+    "step2": "Audiencia y competidores",
+    "step3": "Objetivos SEO",
+    "step4": "Alertas",
+    "step5": "Instalar tracker",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "finish": "Finalizar",
+    "skip": "Saltar por ahora"
+  },
+  "vitals": {
+    "lcp": "Largest Contentful Paint",
+    "cls": "Cumulative Layout Shift",
+    "inp": "Interaction to Next Paint",
+    "fcp": "First Contentful Paint",
+    "ttfb": "Time to First Byte",
+    "passes": "Pasa",
+    "fails": "Falla",
+    "googleThreshold": "Umbral Google"
+  },
+  "landing": {
+    "nav": {
+      "howItWorks": "Cómo funciona",
+      "features": "Características",
+      "alerts": "Alertas",
+      "forWho": "Para quién",
+      "pricing": "Precios",
+      "login": "Iniciar sesión",
+      "menuOpen": "Abrir menú",
+      "menuClose": "Cerrar menú"
+    },
+    "hero": {
+      "label": "NOCTRA SEO/GEO — INTELIGENCIA DE BÚSQUEDA",
+      "headline": "Entiende cómo te encuentra\ntu audiencia.",
+      "subheadline": "Un tracker ligero en tu sitio. Métricas reales de SEO, velocidad y visibilidad en IA. Recomendaciones que explican el problema, el impacto y cómo resolverlo.",
+      "ctaPrimary": "Instalar el tracker →",
+      "ctaSecondary": "Ver cómo funciona ↓",
+      "trustLine": "✦ Google Search Console  ·  ✦ ChatGPT  ·  ✦ Gemini  ·  ✦ Perplexity",
+      "trustItems": ["Sin tarjeta de crédito", "Sin cookies", "Cancela cuando quieras"]
+    },
+    "problem": {
+      "label": "EL PROBLEMA",
+      "heading": "No es que no tengas tráfico.\nEs que no sabes por qué.",
+      "pairs": [
+        {
+          "problem": "Instalaste Google Analytics pero los reportes no te dicen qué hacer.",
+          "solution": "Noctra SEO traduce métricas en acciones concretas priorizadas por impacto."
+        },
+        {
+          "problem": "Tus Core Web Vitals fallan pero no sabes qué está causando la lentitud.",
+          "solution": "El tracker mide CWV reales desde el navegador del usuario — no estimaciones."
+        },
+        {
+          "problem": "Tus páginas tienen problemas de SEO que no puedes ver sin auditar manualmente.",
+          "solution": "Cada visita detecta problemas en tiempo real: títulos, metas, H1, schema, canonical."
+        },
+        {
+          "problem": "No sabes si aparecer en ChatGPT o Perplexity afecta tu negocio.",
+          "solution": "El módulo GEO mide tu visibilidad en motores de IA y te dice cómo mejorarla."
+        },
+        {
+          "problem": "Recibes alertas de que algo falló. Sin contexto de qué hacer.",
+          "solution": "Cada alerta incluye análisis de Claude: impacto, causa raíz y pasos para resolverla."
+        }
+      ]
+    },
+    "howItWorks": {
+      "label": "CÓMO FUNCIONA",
+      "heading": "Un script. Datos reales. IA que interpreta.",
+      "steps": [
+        {
+          "number": "01",
+          "title": "Instala el tracker (30 segundos)",
+          "desc": "Agrega una línea de código a tu sitio. Compatible con cualquier plataforma: HTML, WordPress, Shopify, Next.js. Sin cookies, sin impacto en rendimiento. El script pesa menos de 8KB."
+        },
+        {
+          "number": "02",
+          "title": "Datos reales desde el primer pageview",
+          "desc": "El tracker captura señales SEO on-page, Core Web Vitals reales desde el navegador del usuario, comportamiento y canal de tráfico — en cada visita."
+        },
+        {
+          "number": "03",
+          "title": "Detección automática de problemas",
+          "desc": "Cada pageview evalúa la página contra 15 reglas SEO. Los problemas se clasifican por severidad y se acumulan con datos reales para priorizar qué resolver primero."
+        },
+        {
+          "number": "04",
+          "title": "Alertas inteligentes con Claude",
+          "desc": "Cuando una métrica cae, Claude analiza el contexto de tu negocio y genera: qué pasó, por qué importa para tu industria, y cómo resolverlo paso a paso."
+        },
+        {
+          "number": "05",
+          "title": "Dashboard con recomendaciones accionables",
+          "desc": "Todo en un solo lugar: métricas históricas, problemas priorizados, palabras clave de Search Console, y puntuación de visibilidad en ChatGPT, Gemini y Perplexity."
+        }
+      ]
+    },
+    "demo": {
+      "label": "EL DASHBOARD",
+      "heading": "Métricas que explican. Acciones que resuelven.",
+      "subheading": "No solo ves qué está pasando. Ves por qué importa y qué hacer al respecto.",
+      "tabs": {
+        "overview": "Resumen",
+        "issues": "Problemas SEO",
+        "alert": "Alerta IA"
+      }
+    },
+    "features": {
+      "label": "CARACTERÍSTICAS",
+      "heading": "Todo lo que necesitas para entender tu presencia en búsqueda.",
+      "comingSoon": "Próximamente"
+    },
+    "alerts": {
+      "label": "ALERTAS INTELIGENTES",
+      "heading": "No solo sabes que algo falló.\nSabes exactamente qué hacer.",
+      "para1": "La mayoría de las herramientas te envían una notificación que dice 'tu LCP superó el umbral'. Sin contexto. Sin solución.",
+      "para2": "Noctra SEO usa Claude para analizar cada alerta con el contexto de tu negocio: qué tipo de empresa eres, cuáles son tus páginas críticas, y qué objetivos tienes configurados.",
+      "channels": {
+        "email": "Email — alertas críticas inmediatas + resumen diario",
+        "whatsapp": "WhatsApp — para quien necesita saber en el momento",
+        "slack": "Slack — integración directa a tu canal de equipo",
+        "push": "Push — notificaciones en el navegador"
+      },
+      "criticalLabel": "Crítico: notificación inmediata",
+      "warningLabel": "Advertencia: resumen diario configurable"
+    },
+    "comparativa": {
+      "label": "COMPARATIVA",
+      "heading": "No es otro dashboard de métricas.",
+      "subheading": "La diferencia está en si la herramienta interpreta los datos o te deja solos con ellos.",
+      "columns": {
+        "generic": "Herramienta genérica",
+        "ga": "Google Analytics",
+        "noctra": "Noctra SEO"
+      },
+      "recommended": "Recomendado",
+      "rows": [
+        "Datos reales de CWV (no estimados)",
+        "Detección de problemas SEO en cada visita",
+        "Alertas con análisis de IA",
+        "Contexto de negocio para recomendaciones",
+        "Visibilidad GEO (ChatGPT, Gemini)",
+        "Integración Search Console",
+        "Comportamiento + canales de tráfico",
+        "Script sin cookies (GDPR-friendly)",
+        "Pesa <8KB (sin impacto en rendimiento)",
+        "Reportes exportables para clientes"
+      ]
+    },
+    "forWho": {
+      "label": "PARA QUIÉN",
+      "heading": "Para quien necesita entender su búsqueda, no solo medirla.",
+      "cards": [
+        {
+          "title": "Agencias digitales",
+          "challenge": "Gestionan SEO para múltiples clientes con sitios, industrias y objetivos distintos.",
+          "solution": "Un tracker por dominio. Alertas por cliente. Reportes PDF listos para presentar."
+        },
+        {
+          "title": "SMBs con presencia web",
+          "challenge": "Tienen un sitio funcionando pero no saben si el SEO está trabajando para ellos o en su contra.",
+          "solution": "Visibilidad real sin necesidad de ser experto en SEO. La IA explica todo en lenguaje de negocio."
+        },
+        {
+          "title": "Profesionales independientes",
+          "challenge": "Médicos, abogados, contadores que necesitan posicionarse localmente pero no tienen equipo técnico.",
+          "solution": "Instala el tracker en 30 segundos. Recibe alertas inteligentes con pasos claros para resolverlas."
+        },
+        {
+          "title": "Startups y SaaS",
+          "challenge": "La velocidad del sitio y el SEO técnico afectan directamente el CAC orgánico. No pueden permitirse ignorarlo.",
+          "solution": "CWV reales + problemas técnicos detectados automáticamente. Datos para decisiones rápidas."
+        }
+      ]
+    },
+    "pricing": {
+      "label": "PRECIOS",
+      "heading": "Acceso anticipado — uso interno.",
+      "note": "Noctra SEO está actualmente en uso interno en Noctra Studio. Si quieres acceso anticipado para tu agencia o negocio, escríbenos directamente.",
+      "mostPopular": "Más popular",
+      "perSeat": "/asiento/mes",
+      "trialNote": "Prueba 14 días gratis",
+      "currencyNote": "Precios en USD. Facturación en MXN disponible próximamente.",
+      "cta": {
+        "free": "Registrarse →",
+        "paid": "Comenzar prueba gratuita →",
+        "agency": "Contactar →"
+      },
+      "plans": [
+        {
+          "name": "Gratis",
+          "price": "$0",
+          "period": "/mes",
+          "features": ["1 asiento", "1 sitio", "10,000 pageviews/mes", "10 comprobaciones GEO/mes", "Rastreo bajo demanda (1/mes)"],
+          "cta": "free"
+        },
+        {
+          "name": "Starter",
+          "price": "$19",
+          "period": "/asiento/mes",
+          "features": ["3 asientos", "3 sitios", "100,000 pageviews/mes", "50 comprobaciones GEO/mes", "Rastreo bajo demanda (5/mes)", "Alertas email + push"],
+          "cta": "paid"
+        },
+        {
+          "name": "Pro",
+          "price": "$39",
+          "period": "/asiento/mes",
+          "features": ["10 asientos", "10 sitios", "500,000 pageviews/mes", "200 comprobaciones GEO/mes", "Rastreo ilimitado", "Alertas: email + push + WhatsApp + Slack", "Reportes PDF exportables"],
+          "cta": "paid",
+          "highlighted": true
+        },
+        {
+          "name": "Agencia",
+          "price": "$79",
+          "period": "/asiento/mes",
+          "features": ["Asientos ilimitados", "Sitios ilimitados", "2M pageviews/mes", "1,000 comprobaciones GEO/mes", "Todo lo de Pro", "Onboarding dedicado"],
+          "cta": "agency"
+        }
+      ]
+    },
+    "cta": {
+      "label": "EMPIEZA HOY",
+      "heading": "Tu sitio ya tiene datos.\nSolo falta quien los interprete.",
+      "subheading": "Instala el tracker en 30 segundos. Los primeros datos llegan con la primera visita.",
+      "button": "Instalar el tracker gratis →",
+      "trust": "✦ Sin tarjeta de crédito  ·  ✦ Sin cookies  ·  ✦ Cancela cuando quieras"
+    },
+    "footer": {
+      "tagline": "Ingeniería de Claridad — Search Edition",
+      "copyright": "© 2025 Noctra Studio · Querétaro, México",
+      "privacy": "Política de privacidad",
+      "terms": "Términos de uso",
+      "sections": {
+        "product": "Producto",
+        "ecosystem": "Noctra Studio",
+        "contact": "Contacto"
+      }
+    }
+  }
+}
