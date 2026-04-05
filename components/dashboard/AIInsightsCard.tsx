@@ -24,67 +24,80 @@ const effortConfig = {
 
 export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
   return (
-    <div className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 hover:border-[#10B98150] transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl relative overflow-hidden group">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-[#10B981]/5 blur-[60px] rounded-full -mr-16 -mt-16 pointer-events-none" />
+    <div className="glass-premium p-7 hover:border-[#10B98130] transition-all shadow-2xl relative overflow-hidden group rounded-2xl h-full flex flex-col">
+      <div className="absolute top-0 right-0 w-48 h-48 bg-[#10B981]/5 blur-[80px] rounded-full -mr-24 -mt-24 pointer-events-none group-hover:bg-[#10B981]/10 transition-colors" />
       
-      <div className="flex items-center gap-3 mb-6 relative z-10">
-        <div className="p-2 bg-[#10B98115] rounded-lg group-hover:bg-[#10B98125] transition-colors">
-          <Sparkles size={16} className="text-[#10B981]" />
+      <div className="flex items-center gap-4 mb-8 relative z-10">
+        <div className="p-2.5 bg-[#10B98108] rounded-xl group-hover:bg-[#10B98115] transition-all border border-[#10B98115] shadow-[0_0_15px_#10B98110] emerald-glow">
+          <Sparkles size={18} className="text-[#10B981]" />
         </div>
-        <h3 className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">
-          AI Monitoring
+        <h3 className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-all font-display">
+          AI Diagnostic Intelligence
         </h3>
       </div>
 
       {loading && (
-        <div className="space-y-4 relative z-10">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-4 bg-white/[0.03] rounded-lg animate-pulse" style={{ width: `${80 - i * 10}%` }} />
+        <div className="space-y-5 relative z-10">
+          {[1, 2, 3, 4].map(i => (
+            <div key={i} className="h-3 bg-white/[0.02] rounded-full overflow-hidden relative">
+              <div 
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-[#10B98110] to-transparent animate-shimmer" 
+                style={{ width: '40%', animationDuration: `${1.5 + i * 0.2}s` }} 
+              />
+            </div>
           ))}
         </div>
       )}
 
       {!loading && !insight && (
-        <div className="py-10 text-center relative z-10 flex flex-col items-center justify-center space-y-4">
+        <div className="flex-1 flex flex-col items-center justify-center py-10 text-center relative z-10 space-y-6">
           <div className="relative">
-            <div className="absolute inset-0 bg-[#10B981]/20 blur-2xl rounded-full scale-150 animate-pulse" />
-            <div className="p-4 bg-[#10B98110] border border-[#10B98120] rounded-2xl relative">
-              <Sparkles size={32} className="text-[#10B981]" />
+            <div className="absolute inset-0 bg-[#10B981]/10 blur-3xl rounded-full scale-150 animate-pulse" />
+            <div className="p-6 bg-[#10B98105] border border-[#10B98115] rounded-3xl relative squircle flex items-center justify-center shadow-[0_0_40px_#10B98108]">
+              <Sparkles size={40} className="text-[#10B981] opacity-60" />
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-base font-bold text-[#F1F1F5]">IA en espera</p>
-            <p className="text-sm text-[#8B8B9A] max-w-[240px] mx-auto leading-relaxed">
-              Instala el tracker para que nuestra IA pueda analizar tu tráfico y salud SEO en tiempo real.
+            <p className="text-lg font-black text-[#F1F1F5] font-display tracking-tight">Intelligence Pending</p>
+            <p className="text-[11px] text-[#8B8B9A] max-w-[260px] mx-auto leading-relaxed font-medium opacity-60 uppercase tracking-widest">
+              Activate the Noctra Edge Network to enable real-time neural diagnostics.
             </p>
           </div>
-          <button className="text-sm font-bold text-[#10B981] pt-2 hover:underline">Ver instrucciones de instalación →</button>
+          <button className="text-[10px] font-black text-[#10B981] pt-4 hover:scale-105 transition-transform uppercase tracking-[0.2em] bg-[#10B98108] px-4 py-2 rounded-lg border border-[#10B98120]">
+            System Setup Guide
+          </button>
         </div>
       )}
 
       {!loading && insight && (
-        <div className="space-y-4">
+        <div className="space-y-6 relative z-10 flex-1">
           {insight.summary && (
-            <p className="text-sm text-[#C5C5D0] leading-relaxed">
-              {insight.summary}
+            <p className="text-sm text-[#C5C5D0] leading-relaxed font-medium italic opacity-90 border-l-2 border-[#10B98130] pl-4 py-1">
+              "{insight.summary}"
             </p>
           )}
 
           {insight.actions && insight.actions.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {insight.actions.slice(0, 3).map((action, i) => {
                 const effort = effortConfig[action.effort] ?? effortConfig.medium;
                 return (
-                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-[#111118] border border-[#1E1E2A]">
-                    <div className="w-5 h-5 rounded-full bg-[#10B98115] text-[#10B981] text-[10px] font-mono font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <div key={i} className="flex items-start gap-4 p-4 rounded-2xl bg-white/[0.02] border border-white/[0.04] hover:bg-white/[0.05] hover:border-[#10B98140] transition-all group/action">
+                    <div className="w-6 h-6 rounded-lg bg-[#10B98110] border border-[#10B98120] text-[#10B981] text-[10px] font-black font-mono flex items-center justify-center shrink-0 shadow-sm">
                       {action.step}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-[#F1F1F5] leading-relaxed">{action.instruction}</p>
+                    <div className="flex-1 min-w-0 pt-0.5">
+                      <p className="text-xs text-[#F1F1F5] leading-relaxed font-semibold group-hover/action:text-[#10B981] transition-colors">
+                        {action.instruction}
+                      </p>
                     </div>
-                    <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0', effort.color)}>
+                    <div className={cn('text-[8px] font-black px-2 py-0.5 rounded uppercase tracking-widest shrink-0 border mt-1 shadow-sm transition-colors', 
+                      action.effort === 'low' ? 'bg-[#10B98110] border-[#10B98130] text-[#10B981]' :
+                      action.effort === 'medium' ? 'bg-[#F59E0B10] border-[#F59E0B30] text-[#F59E0B]' :
+                      'bg-white/[0.05] border-white/[0.1] text-[#8B8B9A]'
+                    )}>
                       {effort.label}
-                    </span>
+                    </div>
                   </div>
                 );
               })}
@@ -92,6 +105,9 @@ export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
           )}
         </div>
       )}
+
+      {/* Edge gradient for glass effect depth */}
+      <div className="absolute inset-[1px] rounded-2xl bg-gradient-to-br from-white/[0.05] to-transparent pointer-events-none" />
     </div>
   );
 }

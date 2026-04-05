@@ -3,7 +3,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-satoshi);
+  --font-display: var(--font-satoshi);
   --font-mono: var(--font-geist-mono);
   
   /* CRM interactive transforms */
@@ -17,16 +18,18 @@
   --border: rgba(255, 255, 255, 0.08);
   --muted: #888888;
   --muted-foreground: #a3a3a3;
-  --card: #0a0a0a;
-  --card-hover: #0f0f0f;
+  --card: rgba(10, 10, 15, 0.5);
+  --card-hover: rgba(15, 15, 20, 0.8);
+
+  --font-satoshi: 'Satoshi', system-ui, sans-serif;
 
   /* Accents */
   --emerald: #10B981;
   --red: #ef4444;
   --amber: #f59e0b;
 
-  /* CRM Standard Radius */
-  --radius: 0.75rem;
+  /* Premium Radius */
+  --radius: 1rem;
 }
 
 * {
@@ -37,10 +40,14 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: var(--font-inter);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-outfit);
 }
 
 ::selection {
@@ -89,8 +96,24 @@ body {
   }
 
   .glass {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(255, 255, 255, 0.02);
     backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  .glass-premium {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .squircle {
+    border-radius: 22% 22% 22% 22% / 22% 22% 22% 22%;
+  }
+
+  .emerald-glow {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
   }
 }

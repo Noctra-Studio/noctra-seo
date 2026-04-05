@@ -52,57 +52,60 @@ export function TrafficChart({ data }: TrafficChartProps) {
   const hasData = data && data.length > 0;
 
   return (
-    <div className="bg-[#14141C] border border-white/[0.05] rounded-2xl p-7 hover:border-[#10B98150] transition-all shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-3xl group">
-      <div className="flex items-center justify-between mb-8">
-        <h3 className="text-xs text-[#8B8B9A] font-bold uppercase tracking-widest">
-          Tráfico por canal
+    <div className="glass-premium p-7 hover:border-[#10B98150] transition-all shadow-2xl group rounded-2xl relative overflow-hidden">
+      <div className="flex items-center justify-between mb-8 z-10">
+        <h3 className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-all font-display">
+          Traffic Acquisition
         </h3>
         {hasData && (
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {CHANNELS.slice(0, 3).map(ch => (
-              <div key={ch.key} className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: ch.color }} />
-                <span className="text-[10px] font-bold text-[#8B8B9A] uppercase">{ch.label}</span>
+              <div key={ch.key} className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style={{ background: ch.color }} />
+                <span className="text-[9px] font-black text-[#8B8B9A] uppercase tracking-wider">{ch.label}</span>
               </div>
             ))}
           </div>
         )}
       </div>
       
-      <div className="relative h-[260px] w-full">
+      <div className="relative h-[280px] w-full z-10">
         {!hasData ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center space-y-3">
-            <div className="w-12 h-12 bg-white/[0.03] rounded-full border border-white/[0.05] flex items-center justify-center">
-              <span className="text-xl">📊</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4 opacity-50">
+            <div className="w-16 h-16 bg-white/[0.02] rounded-full border border-white/[0.05] flex items-center justify-center squircle">
+              <span className="text-2xl">📊</span>
             </div>
-            <p className="text-sm text-[#8B8B9A] font-medium">Buscando datos de tráfico...</p>
+            <p className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-widest">Awaiting ingestion analytics...</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data} margin={{ top: 0, right: 0, left: -25, bottom: 0 }}>
+            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 {CHANNELS.map(({ key, color }) => (
                   <linearGradient key={key} id={`grad-${key}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={color} stopOpacity={0.15} />
+                    <stop offset="5%" stopColor={color} stopOpacity={0.2} />
                     <stop offset="95%" stopColor={color} stopOpacity={0} />
                   </linearGradient>
                 ))}
               </defs>
-              <CartesianGrid strokeDasharray="0" stroke="rgba(255,255,255,0.03)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.02)" vertical={false} />
               <XAxis
                 dataKey="date"
-                tick={{ fill: '#4B4B5A', fontSize: 10, fontWeight: 600 }}
+                tick={{ fill: '#4B4B5A', fontSize: 9, fontWeight: 700, letterSpacing: '0.1em' }}
                 tickLine={false}
                 axisLine={false}
-                dy={10}
+                dy={15}
               />
               <YAxis
-                tick={{ fill: '#4B4B5A', fontSize: 10, fontWeight: 600 }}
+                tick={{ fill: '#4B4B5A', fontSize: 9, fontWeight: 700 }}
                 tickLine={false}
                 axisLine={false}
                 dx={-10}
               />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1 }} />
+              <Tooltip 
+                content={<CustomTooltip />} 
+                cursor={{ stroke: 'rgba(255,255,255,0.05)', strokeWidth: 1 }} 
+              />
               {CHANNELS.map(({ key, label, color }) => (
                 <Area
                   key={key}
@@ -110,16 +113,20 @@ export function TrafficChart({ data }: TrafficChartProps) {
                   dataKey={key}
                   name={label}
                   stroke={color}
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                   fill={`url(#grad-${key})`}
                   dot={false}
-                  activeDot={{ r: 4, strokeWidth: 0, fill: color }}
+                  activeDot={{ r: 5, strokeWidth: 0, fill: color, className: 'emerald-glow' }}
+                  animationDuration={1500}
                 />
               ))}
             </AreaChart>
           </ResponsiveContainer>
         )}
       </div>
+
+      {/* Subtle background glow */}
+      <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/[0.01] blur-3xl rounded-full" />
     </div>
   );
 }

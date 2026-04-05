@@ -2,6 +2,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { routing } from '@/i18n/routing';
+import { satoshi } from '@/lib/fonts';
 
 type Props = {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ export default async function LocaleLayout({ children, params }: Props) {
   }
 
   const messages = await getMessages();
-
+  
   return (
     <NextIntlClientProvider messages={messages}>
       {children}

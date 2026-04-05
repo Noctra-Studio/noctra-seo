@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
 import { usePathname } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import {
@@ -28,6 +29,41 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const params = useParams();
   const projectId = params?.projectId as string;
   const locale = params?.locale as string ?? 'es';
+  const [userName, setUserName] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const handleAnalyze = () => {
+    setIsAnalyzing(true);
+    // Simulate IA analysis
+    setTimeout(() => {
+      setIsAnalyzing(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('full_name')
+          .eq('id', user.id)
+          .single();
+        if (profile?.full_name) {
+          setUserName(profile.full_name.split(' ')[0]);
+        }
+      }
+    }
+    loadUser();
+  }, []);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return 'Buenos días';
+    if (hour >= 12 && hour < 19) return 'Buenas tardes';
+    return 'Buenas noches';
+  };
 
   const basePath = `/${locale}/dashboard/${projectId ?? ''}`;
 
@@ -36,23 +72,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar — desktop */}
       <aside
         className={cn(
-          'hidden md:flex flex-col border-r border-[#1E1E2A] bg-[#111118] transition-all duration-200 shrink-0',
-          collapsed ? 'w-[60px]' : 'w-[240px]'
+          'hidden md:flex flex-col border-r border-white/[0.05] bg-[#080808] transition-all duration-300 ease-in-out shrink-0 z-40',
+          collapsed ? 'w-[70px]' : 'w-[220px]'
         )}
       >
         {/* Logo */}
         <div className={cn(
-          'flex items-center h-14 px-4 border-b border-[#1E1E2A]',
-          collapsed ? 'justify-center' : 'gap-2'
+          'flex items-center h-16 px-5 border-b border-white/[0.05]',
+          collapsed ? 'justify-center' : 'gap-3'
         )}>
-          <Image src="/favicon-light.svg" alt="Noctra" width={28} height={28} className="shrink-0" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10B98120] squircle">
+            <Image src="/favicon-light.svg" alt="Noctra" width={20} height={20} className="brightness-200" />
+          </div>
           {!collapsed && (
-            <span className="font-bold text-base tracking-tight">Noctra SEO</span>
+            <span className="font-bold text-lg tracking-tight text-[#F1F1F5] font-display">Noctra</span>
           )}
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 py-4 px-2.5 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
           {navItems.map(({ icon: Icon, label, href }) => {
             const fullHref = `${basePath}${href}`;
             const isActive = href === '' ? pathname === basePath || pathname === `${basePath}/` : pathname.startsWith(`${basePath}${href}`);
@@ -62,15 +100,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={fullHref}
                 className={cn(
-                  'flex items-center gap-3.5 px-3 py-2.5 rounded-lg text-base transition-all group relative',
+                  'flex items-center gap-3.5 px-3 py-3 rounded-xl text-sm transition-all group relative',
                   isActive
-                    ? 'bg-[#10B98115] text-[#10B981] font-medium'
-                    : 'text-[#8B8B9A] hover:text-[#F1F1F5] hover:bg-[#1A1A24]'
+                    ? 'bg-[#10B98110] text-[#10B981] font-semibold'
+                    : 'text-[#8B8B9A] hover:text-[#F1F1F5] hover:bg-white/[0.03]'
                 )}
               >
-                <Icon size={18} className="shrink-0" />
+                <Icon size={18} className={cn('transition-all', isActive ? 'scale-110' : 'group-hover:scale-110')} />
                 {!collapsed && (
-                  <span className="flex-1">{label}</span>
+                  <span className="flex-1 truncate">{label}</span>
+                )}
+                {isActive && !collapsed && (
+                  <div className="absolute right-2 w-1 h-4 bg-[#10B981] rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 )}
               </Link>
             );
@@ -96,15 +137,25 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="h-16 border-b border-[#1E1E2A] flex items-center justify-between px-8 shrink-0">
-          <div className="flex items-center gap-4">
-            <span className="text-base font-medium text-[#8B8B9A]">
-              {projectId ? `Proyecto` : 'Dashboard'}
+        <header className="h-16 md:h-20 border-b border-white/[0.05] flex items-center justify-between px-6 md:px-10 shrink-0 sticky top-0 bg-[#0A0A0F]/80 backdrop-blur-xl z-30">
+          <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+            <span className="text-xs md:text-sm font-medium text-[#8B8B9A] flex items-center gap-2">
+              <span className="opacity-60">{getGreeting()},</span>
+              <span className="text-[#F1F1F5] font-bold">{userName || 'Usuario'}</span>
             </span>
           </div>
-          <button className="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-[#10B98115] border border-[#10B98130] text-[#10B981] text-base font-semibold hover:bg-[#10B98125] transition-all hover:scale-[1.02] active:scale-[0.98]">
-            <Sparkles size={16} />
-            Analizar con IA
+          <button 
+            onClick={handleAnalyze}
+            disabled={isAnalyzing}
+            className={cn(
+              "flex items-center gap-2 px-3 py-2 md:px-5 md:py-2.5 rounded-2xl transition-all shadow-lg shadow-[#10B98105] group",
+              isAnalyzing 
+                ? "bg-[#10B98125] text-[#10B981] cursor-wait animate-pulse" 
+                : "bg-gradient-to-br from-[#10B98115] to-[#10B98105] border border-[#10B98125] text-[#10B981] hover:from-[#10B98125] hover:to-[#10B98110] hover:scale-[1.02] active:scale-[0.98]"
+            )}
+          >
+            <Sparkles size={14} className={cn("transition-transform", isAnalyzing ? "animate-spin" : "group-hover:rotate-12")} />
+            <span className="tracking-tight">{isAnalyzing ? 'Analizando...' : 'Analizar IA'}</span>
           </button>
         </header>
 
@@ -114,8 +165,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      {/* Bottom nav — mobile */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[#111118] border-t border-[#1E1E2A] flex items-center justify-around px-2 h-16 z-50">
+      {/* Bottom nav — mobile refined */}
+      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-premium rounded-[2rem] px-4 h-16 z-50 flex items-center justify-around shadow-2xl">
         {navItems.slice(0, 5).map(({ icon: Icon, label, href }) => {
           const fullHref = `${basePath}${href}`;
           const isActive = href === '' ? pathname === basePath : pathname.startsWith(`${basePath}${href}`);
@@ -124,12 +175,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               key={href}
               href={fullHref}
               className={cn(
-                'flex flex-col items-center gap-1 px-3 py-1.5 rounded-md transition-colors',
-                isActive ? 'text-[#10B981]' : 'text-[#8B8B9A]'
+                'flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 relative overflow-hidden',
+                isActive ? 'text-[#10B981] scale-110' : 'text-[#8B8B9A] opacity-60'
               )}
             >
-              <Icon size={20} />
-              <span className="text-[10px]">{label}</span>
+              <Icon size={20} className={cn('transition-all', isActive && 'emerald-glow')} />
+              <span className="text-[9px] font-bold uppercase tracking-wider">{label}</span>
+              {isActive && (
+                <div className="absolute inset-0 bg-[#10B98108] animate-in fade-in duration-500" />
+              )}
             </Link>
           );
         })}
