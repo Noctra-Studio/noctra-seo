@@ -6,7 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 export async function signIn(formData: FormData, locale: string) {
   const supabase = await createClient();
-  const email = formData.get('email') as string;
+  const email = (formData.get('email') as string)?.trim();
   const password = formData.get('password') as string;
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -24,9 +24,9 @@ export async function signIn(formData: FormData, locale: string) {
 
 export async function signUp(formData: FormData, locale: string) {
   const supabase = await createClient();
-  const email = formData.get('email') as string;
+  const email = (formData.get('email') as string)?.trim();
   const password = formData.get('password') as string;
-  const fullName = formData.get('fullName') as string;
+  const fullName = (formData.get('fullName') as string)?.trim();
 
   const { error } = await supabase.auth.signUp({
     email,
