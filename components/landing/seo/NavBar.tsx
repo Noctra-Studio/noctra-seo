@@ -103,7 +103,7 @@ export function NavBar() {
                 {locale === 'es' ? 'EN' : 'ES'}
               </button>
               <Link
-                href="/es/login"
+                href={`/${locale}/login`}
                 className="flex items-center justify-center px-8 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest transition-colors duration-200"
                 style={{ background: '#ffffff', color: '#000000' }}
                 onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.85)'; }}
@@ -191,7 +191,7 @@ export function NavBar() {
                 {locale === 'es' ? 'Switch to English' : 'Cambiar a Español'}
               </button>
               <Link
-                href="/es/login"
+                href={`/${locale}/login`}
                 className="px-6 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-widest"
                 style={{ background: '#ffffff', color: '#000000' }}
                 onClick={() => setOpen(false)}
