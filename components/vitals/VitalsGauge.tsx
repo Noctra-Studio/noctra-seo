@@ -143,7 +143,7 @@ export function VitalsGauge({ lcp, lcpTrend, cls, clsTrend, inp, inpTrend, class
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    className="absolute bottom-full mb-3 left-0 w-64 p-4 bg-[#0A0A0F/95] backdrop-blur-xl z-[100] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/10 pointer-events-none"
+                    className="absolute bottom-full mb-3 left-0 w-64 p-4 bg-[#111118] backdrop-blur-xl z-[100] rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-white/15 pointer-events-none"
                   >
                     <p className="text-[12px] text-white font-semibold leading-relaxed mb-2">
                       {v.desc}
@@ -153,7 +153,7 @@ export function VitalsGauge({ lcp, lcpTrend, cls, clsTrend, inp, inpTrend, class
                       {v.importance}
                     </p>
                     {/* Shadow Arrow */}
-                    <div className="absolute -bottom-1 left-6 w-2 h-2 bg-[#0A0A0F/95] rotate-45 border-r border-b border-white/10" />
+                    <div className="absolute -bottom-1 left-6 w-2 h-2 bg-[#111118] rotate-45 border-r border-b border-white/15" />
                   </motion.div>
                 )}
               </AnimatePresence>
