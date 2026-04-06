@@ -70,7 +70,7 @@ export function NavBar() {
             <Link href="/" className="flex items-center gap-3 select-none">
               <Image src="/noctra-navbar-dark.svg" alt="Noctra" width={100} height={28} className="h-6 w-auto" priority />
               <span className="font-mono text-[10px] border-l border-white/20 pl-3 uppercase tracking-[0.3em] font-bold" style={{ color: '#10b981' }}>
-                SEO
+                RADAR
               </span>
             </Link>
 
@@ -129,7 +129,7 @@ export function NavBar() {
         <Link href="/" className="flex items-center gap-2.5 select-none">
           <Image src="/noctra-navbar-dark.svg" alt="Noctra" width={90} height={26} className="h-5 w-auto" priority />
           <span className="font-mono text-[9px] border-l border-white/20 pl-2.5 uppercase tracking-[0.3em] font-bold" style={{ color: '#10b981' }}>
-            SEO
+            RADAR
           </span>
         </Link>
         <button
@@ -161,7 +161,7 @@ export function NavBar() {
               <Link href="/" className="flex items-center gap-2.5" onClick={() => setOpen(false)}>
                 <Image src="/noctra-navbar-dark.svg" alt="Noctra" width={90} height={26} className="h-5 w-auto" priority />
                 <span className="font-mono text-[9px] border-l border-white/20 pl-2.5 uppercase tracking-[0.3em] font-bold" style={{ color: '#10b981' }}>
-                  SEO
+                  RADAR
                 </span>
               </Link>
               <button

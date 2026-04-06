@@ -47,7 +47,7 @@ export function AuthForm({ type, locale, onSubmit }: AuthFormProps) {
         <Link href="/" className="inline-flex items-center gap-3 mb-10 group">
           <Image src="/noctra-navbar-dark.svg" alt="Noctra" width={110} height={30} className="h-6 w-auto transition-transform group-hover:scale-105" priority />
           <span className="font-mono text-[10px] border-l border-white/20 pl-3 uppercase tracking-[0.4em] font-bold text-[#10b981]">
-            SEO
+            RADAR
           </span>
         </Link>
         <h1 className="text-4xl font-bold tracking-tight text-white mb-4 leading-tight">

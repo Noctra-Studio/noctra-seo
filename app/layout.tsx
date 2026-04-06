@@ -4,8 +4,8 @@ import { satoshi } from '@/lib/fonts';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Noctra SEO',
-  description: 'Plataforma de inteligencia SEO y GEO para agencias y SMBs',
+  title: 'Noctra RADAR',
+  description: 'Plataforma de inteligencia y auditoría técnica para agencias y SMBs',
   icons: {
     icon: [
       { url: '/favicon-dark.svg', media: '(prefers-color-scheme: light)' },

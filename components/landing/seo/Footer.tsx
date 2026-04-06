@@ -31,7 +31,7 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 select-none group">
               <span className="font-bold text-xl tracking-tighter text-white">Noctra</span>
               <span className="font-mono text-[10px] border-l border-white/20 pl-2.5 uppercase tracking-[0.3em] font-bold" style={{ color: '#10b981' }}>
-                SEO
+                RADAR
               </span>
             </Link>
             <p className="text-[13px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.3)' }}>
