@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Info } from 'lucide-react';
+import { Info, TrendingUp, TrendingDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface VitalConfig {
@@ -58,18 +58,21 @@ const statusConfig = {
 
 interface VitalsGaugeProps {
   lcp?: number | null;
+  lcpTrend?: number;
   cls?: number | null;
+  clsTrend?: number;
   inp?: number | null;
+  inpTrend?: number;
   className?: string;
 }
 
-export function VitalsGauge({ lcp, cls, inp, className }: VitalsGaugeProps) {
+export function VitalsGauge({ lcp, lcpTrend, cls, clsTrend, inp, inpTrend, className }: VitalsGaugeProps) {
   const [hoveredVital, setHoveredVital] = useState<string | null>(null);
 
   const vitals = [
-    { ...VITALS_INFO.LCP, value: lcp ?? null },
-    { ...VITALS_INFO.CLS, value: cls ?? null },
-    { ...VITALS_INFO.INP, value: inp ?? null },
+    { ...VITALS_INFO.LCP, value: lcp ?? null, trend: lcpTrend ?? 0 },
+    { ...VITALS_INFO.CLS, value: cls ?? null, trend: clsTrend ?? 0 },
+    { ...VITALS_INFO.INP, value: inp ?? null, trend: inpTrend ?? 0 },
   ];
 
   const hasData = vitals.some(v => v.value !== null);
@@ -114,10 +117,21 @@ export function VitalsGauge({ lcp, cls, inp, className }: VitalsGaugeProps) {
               </div>
 
               <div className="flex items-center gap-4">
-                <span className="text-sm font-black text-[#F1F1F5]">
-                  {displayValue}
-                </span>
-                <div className={cn("px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest", config.bg, config.color)}>
+                <div className="flex flex-col items-end">
+                  <span className="text-sm font-black text-[#F1F1F5]">
+                    {displayValue}
+                  </span>
+                  {v.value !== null && v.trend !== 0 && (
+                    <div className={cn(
+                      "flex items-center gap-0.5 text-[10px] font-bold",
+                      v.trend > 0 ? "text-[#10B981]" : "text-[#EF4444]"
+                    )}>
+                      {v.trend > 0 ? <TrendingUp size={10} /> : <TrendingDown size={10} />}
+                      {Math.abs(v.trend).toFixed(1)}%
+                    </div>
+                  )}
+                </div>
+                <div className={cn("px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest shrink-0", config.bg, config.color)}>
                   {config.label}
                 </div>
               </div>

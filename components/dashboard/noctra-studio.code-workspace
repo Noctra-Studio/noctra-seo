@@ -1,0 +1,26 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../noctra-studio"
+		},
+		{
+			"path": "../../../noctra-proposals"
+		},
+		{
+			"path": "../../../noctra-social-media"
+		},
+		{
+			"path": "../../../noctra-studio-crm"
+		},
+		{
+			"path": "../../../noctra-tools"
+		},
+		{
+			"path": "../../../../../noctra-academy"
+		}
+	],
+	"settings": {}
+}

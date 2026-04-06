@@ -37,9 +37,11 @@ interface OverviewData {
   organicTrend: number;
   organicSparkline: number[];
   activeAlerts: { critical: number; warning: number };
-  lcp: number | null;
-  cls: number | null;
-  inp: number | null;
+  vitals: {
+    lcp: { value: number | null; trend: number };
+    cls: { value: number | null; trend: number };
+    inp: { value: number | null; trend: number };
+  };
   trafficChart: Array<{ date: string; organic_search?: number; direct?: number; referral?: number; social?: number }>;
   topPages: Array<{ path: string; visits: number; seo_score: number }>;
   issues: Array<{ type: string; severity: 'critical' | 'warning' | 'info'; detail: string; path?: string; field?: string }>;
@@ -97,7 +99,8 @@ export default function DashboardOverview() {
     const [
       pageviewsRes,
       seoRes,
-      vitalsRes,
+      vitalsCurrentRes,
+      vitalsPreviousRes,
       alertsRes,
     ] = await Promise.all([
       supabase
@@ -111,12 +114,16 @@ export default function DashboardOverview() {
         .select('path, seo_score, issues, first_seen_at')
         .eq('domain_id', domainId)
         .order('seo_score', { ascending: true }),
-      supabase
-        .from('page_vitals_p75')
-        .select('lcp_p75, cls_p75, inp_p75')
-        .eq('domain_id', domainId)
-        .limit(1)
-        .single(),
+      supabase.rpc('get_domain_vitals_p75', {
+        p_domain_id: domainId,
+        p_since: sinceCurrent,
+        p_until: now.toISOString()
+      }),
+      supabase.rpc('get_domain_vitals_p75', {
+        p_domain_id: domainId,
+        p_since: sincePrevious,
+        p_until: sinceCurrent
+      }),
       supabase
         .from('alerts')
         .select('*')
@@ -128,7 +135,8 @@ export default function DashboardOverview() {
 
     const allPageviews = pageviewsRes.data ?? [];
     const seoSignals = seoRes.data ?? [];
-    const vitals = vitalsRes.data;
+    const currentVitals = vitalsCurrentRes.data?.[0];
+    const previousVitals = vitalsPreviousRes.data?.[0];
     const alerts = alertsRes.data ?? [];
 
     // Filter pageviews by period
@@ -210,6 +218,13 @@ export default function DashboardOverview() {
     // Latest AI insight
     const latestInsight = alerts.find(a => a.ai_analysis_status === 'generated')?.ai_analysis ?? null;
 
+    // Vitals trend calculation helper
+    const calcTrend = (curr: number | null | undefined, prev: number | null | undefined, invert = true) => {
+      if (curr === null || curr === undefined || prev === null || prev === undefined || prev === 0) return 0;
+      const pct = ((curr - prev) / prev) * 100;
+      return invert ? -pct : pct; // For vitals, lower is better, so decrease is positive trend
+    };
+
     setData({
       seoScore: avgScore,
       seoScoreTrend,
@@ -217,9 +232,11 @@ export default function DashboardOverview() {
       organicTrend,
       organicSparkline,
       activeAlerts,
-      lcp: vitals?.lcp_p75 ?? null,
-      cls: vitals?.cls_p75 ?? null,
-      inp: vitals?.inp_p75 ?? null,
+      vitals: {
+        lcp: { value: currentVitals?.lcp ?? null, trend: calcTrend(currentVitals?.lcp, previousVitals?.lcp) },
+        cls: { value: currentVitals?.cls ?? null, trend: calcTrend(currentVitals?.cls, previousVitals?.cls) },
+        inp: { value: currentVitals?.inp ?? null, trend: calcTrend(currentVitals?.inp, previousVitals?.inp) },
+      },
       trafficChart,
       topPages,
       issues: criticalIssues,
@@ -355,9 +372,12 @@ export default function DashboardOverview() {
           
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} className="h-full">
             <VitalsGauge
-              lcp={data?.lcp}
-              cls={data?.cls}
-              inp={data?.inp}
+              lcp={data?.vitals.lcp.value}
+              lcpTrend={data?.vitals.lcp.trend}
+              cls={data?.vitals.cls.value}
+              clsTrend={data?.vitals.cls.trend}
+              inp={data?.vitals.inp.value}
+              inpTrend={data?.vitals.inp.trend}
               className="h-full"
             />
           </motion.div>
