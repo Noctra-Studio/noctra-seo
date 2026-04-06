@@ -130,168 +130,142 @@ export async function POST(req: NextRequest) {
 
   // 6. Transition to 'running'
   console.info(`[Audit ${jobId}] Starting audit for ${url}...`);
-  await supabase
-    .from('audit_jobs')
-    .update({ status: 'running', started_at: new Date().toISOString() })
-    .eq('id', jobId)
+  
+  // NOTE: We wrap the heavy work in an asynchronous function that we'll kick off 
+  // without awaiting, or using Next's 'after' if available for reliability in serverless.
+  const performAudit = async () => {
+    try {
+      await supabase
+        .from('audit_jobs')
+        .update({ status: 'running', started_at: new Date().toISOString() })
+        .eq('id', jobId)
 
-  // ---- Execute checks ----
-  try {
-    const domain_hostname = extractHostname(url)
-    console.info(`[Audit ${jobId}] Domain hostname: ${domain_hostname}`);
+      const domain_hostname = extractHostname(url)
+      console.info(`[Audit ${jobId}] Domain hostname: ${domain_hostname}`);
 
-    // 7. Run all check groups in parallel
-    console.info(`[Audit ${jobId}] Running parallel check groups...`);
-    const [seoResult, dnsResult, secResult, techResult, perfResult, repResult] =
-      await Promise.allSettled([
-        runSeoChecks(url),
-        runDnsChecks(domain_hostname),
-        runSecurityChecks(url),
-        runTechChecks(url),
-        runPerformanceChecks(url),
-        runReputationChecks(domain_hostname),
-      ])
-    
-    console.info(`[Audit ${jobId}] All check groups settled.`);
+      // 7. Run all check groups in parallel
+      console.info(`[Audit ${jobId}] Running parallel check groups...`);
+      const [seoResult, dnsResult, secResult, techResult, perfResult, repResult] =
+        await Promise.allSettled([
+          runSeoChecks(url),
+          runDnsChecks(domain_hostname),
+          runSecurityChecks(url),
+          runTechChecks(url),
+          runPerformanceChecks(url),
+          runReputationChecks(domain_hostname),
+        ])
+      
+      console.info(`[Audit ${jobId}] All check groups settled.`);
 
-    // Flatten results — settled rejections become error CheckResults
-    const GROUP_KEYS: CheckGroup[] = ['seo', 'dns', 'security', 'tech', 'performance', 'reputation']
+      // Flatten results
+      const settledToChecks = (result: PromiseSettledResult<CheckResult[]>, group: CheckGroup): CheckResult[] => {
+        if (result.status === 'fulfilled') return result.value
+        return [{
+          check_key: `${group}_runner`,
+          group,
+          status:    'error',
+          score:     null,
+          data:      {},
+          error:     result.reason instanceof Error ? result.reason.message : String(result.reason),
+        }]
+      }
 
-    function settledToChecks(
-      result: PromiseSettledResult<CheckResult[]>,
-      group: CheckGroup,
-    ): CheckResult[] {
-      if (result.status === 'fulfilled') return result.value
-      // Entire group runner threw — emit a single error result for the group
-      return [{
-        check_key: `${group}_runner`,
-        group,
-        status:    'error',
-        score:     null,
-        data:      {},
-        error:     result.reason instanceof Error
-          ? result.reason.message
-          : String(result.reason),
-      }]
-    }
+      const allChecks: CheckResult[] = [
+        ...settledToChecks(seoResult,  'seo'),
+        ...settledToChecks(dnsResult,  'dns'),
+        ...settledToChecks(secResult,  'security'),
+        ...settledToChecks(techResult, 'tech'),
+        ...settledToChecks(perfResult, 'performance'),
+        ...settledToChecks(repResult,  'reputation'),
+      ]
 
-    const allChecks: CheckResult[] = [
-      ...settledToChecks(seoResult,  'seo'),
-      ...settledToChecks(dnsResult,  'dns'),
-      ...settledToChecks(secResult,  'security'),
-      ...settledToChecks(techResult, 'tech'),
-      ...settledToChecks(perfResult, 'performance'),
-      ...settledToChecks(repResult,  'reputation'),
-    ]
-
-    // 8. Calculate scores
-    const checksByGroup = (group: CheckGroup) =>
-      allChecks.filter((c) => c.group === group)
-
-    const groupScores: Partial<Record<CheckGroup, number>> = {}
-    for (const group of GROUP_KEYS) {
-      const checks = checksByGroup(group)
-      if (checks.length > 0) {
-        const score = calculateGroupScore(checks)
-        // Only record the group score if at least one check contributed
-        if (score > 0 || checks.some((c) => c.status !== 'error')) {
-          groupScores[group] = score
+      // 8. Calculate scores
+      const GROUP_KEYS: CheckGroup[] = ['seo', 'dns', 'security', 'tech', 'performance', 'reputation']
+      const groupScores: Partial<Record<CheckGroup, number>> = {}
+      for (const group of GROUP_KEYS) {
+        const checks = allChecks.filter((c) => c.group === group)
+        if (checks.length > 0) {
+          const score = calculateGroupScore(checks)
+          if (score > 0 || checks.some((c) => c.status !== 'error')) {
+            groupScores[group] = score
+          }
         }
       }
-    }
 
-    const overallScore = calculateOverallScore(groupScores)
+      const overallScore = calculateOverallScore(groupScores)
 
-    // 9. Enrich checks with Claude summaries and recommendations
-    console.info(`[Audit ${jobId}] Analyzing results with AI (Claude)...`);
-    const enrichedChecks = await analyzeAuditResults(allChecks, url)
-    console.info(`[Audit ${jobId}] AI enrichment complete.`);
-
-    // 9b. Generate executive summary (best-effort, won't block completion)
-    const partialJob: AuditJob = {
-      id: jobId, domain_id: siteId, user_id: user.id,
-      status: 'completed', triggered_by: triggeredBy,
-      started_at: null, completed_at: null,
-      score_overall: overallScore,
-      score_seo: groupScores.seo ?? null,
-      score_dns: groupScores.dns ?? null,
-      score_security: groupScores.security ?? null,
-      score_performance: groupScores.performance ?? null,
-      score_tech: groupScores.tech ?? null,
-      score_reputation: groupScores.reputation ?? null,
-      created_at: new Date().toISOString(),
-    }
-    console.info(`[Audit ${jobId}] Generating executive summary...`);
-    const executiveSummary = await generateAuditSummary(partialJob, enrichedChecks)
-    console.info(`[Audit ${jobId}] Executive summary complete.`);
-
-    // 10. Persist all checks
-    console.info(`[Audit ${jobId}] Persisting ${enrichedChecks.length} checks to DB...`);
-    const checksToInsert = enrichedChecks.map((c) => ({
-      job_id:          jobId,
-      check_key:       c.check_key,
-      group:           c.group,
-      status:          c.status,
-      score:           c.score,
-      data:            c.data,
-      summary:         c.summary         || null,
-      recommendations: c.recommendations?.length ? c.recommendations : null,
-    }))
-
-    if (checksToInsert.length > 0) {
-      const { error: insertError } = await supabase
-        .from('audit_checks')
-        .insert(checksToInsert)
-
-      if (insertError) throw new Error(`Failed to insert checks: ${insertError.message}`)
-    }
-
-    // 11. Mark job completed with all scores
-    const completedAt = new Date().toISOString()
-    console.info(`[Audit ${jobId}] Marking job as completed.`);
-
-    await supabase
-      .from('audit_jobs')
-      .update({
-        status:           'completed',
-        completed_at:     completedAt,
-        ...(executiveSummary ? { executive_summary: executiveSummary } : {}),
-        score_overall:    overallScore,
-        score_seo:        groupScores.seo         ?? null,
-        score_dns:        groupScores.dns         ?? null,
-        score_security:   groupScores.security    ?? null,
+      // 9. Enrich with AI
+      console.info(`[Audit ${jobId}] Analyzing results with AI (Claude)...`);
+      const enrichedChecks = await analyzeAuditResults(allChecks, url)
+      
+      // 9b. Executive Summary
+      const partialJob: AuditJob = {
+        id: jobId, domain_id: siteId, user_id: user.id,
+        status: 'completed', triggered_by: triggeredBy,
+        started_at: null, completed_at: null,
+        score_overall: overallScore,
+        score_seo: groupScores.seo ?? null,
+        score_dns: groupScores.dns ?? null,
+        score_security: groupScores.security ?? null,
         score_performance: groupScores.performance ?? null,
-        score_tech:       groupScores.tech        ?? null,
-        score_reputation: groupScores.reputation  ?? null,
-      })
-      .eq('id', jobId)
+        score_tech: groupScores.tech ?? null,
+        score_reputation: groupScores.reputation ?? null,
+        created_at: new Date().toISOString(),
+      }
+      console.info(`[Audit ${jobId}] Generating executive summary...`);
+      const executiveSummary = await generateAuditSummary(partialJob, enrichedChecks)
 
-    const duration_ms = Math.round(performance.now() - t0)
-    console.info(`[Audit ${jobId}] AUDIT FINISHED perfectly in ${duration_ms}ms.`);
+      // 10. Persist checks
+      const checksToInsert = enrichedChecks.map((c) => ({
+        job_id:          jobId,
+        check_key:       c.check_key,
+        group:           c.group,
+        status:          c.status,
+        score:           c.score,
+        data:            c.data,
+        summary:         c.summary         || null,
+        recommendations: c.recommendations?.length ? c.recommendations : null,
+      }))
 
-    return NextResponse.json({
-      job_id:       jobId,
-      status:       'completed',
-      scores: {
-        overall:     overallScore,
-        seo:         groupScores.seo         ?? 0,
-        dns:         groupScores.dns         ?? 0,
-        security:    groupScores.security    ?? 0,
-        tech:        groupScores.tech        ?? 0,
-        performance: groupScores.performance ?? 0,
-        reputation:  groupScores.reputation  ?? 0,
-      },
-      checks_count: checksToInsert.length,
-      duration_ms,
-    })
-  } catch (err) {
-    // 11. Mark job failed on unhandled error
-    await supabase
-      .from('audit_jobs')
-      .update({ status: 'failed', completed_at: new Date().toISOString() })
-      .eq('id', jobId)
+      if (checksToInsert.length > 0) {
+        const { error: insertError } = await supabase.from('audit_checks').insert(checksToInsert)
+        if (insertError) throw new Error(`Persistence failed: ${insertError.message}`)
+      }
 
-    const message = err instanceof Error ? err.message : 'Unknown error'
-    return jsonError(message, 'INTERNAL_ERROR', 500)
-  }
+      // 11. Complete job
+      await supabase
+        .from('audit_jobs')
+        .update({
+          status:           'completed',
+          completed_at:     new Date().toISOString(),
+          executive_summary: executiveSummary,
+          score_overall:    overallScore,
+          score_seo:        groupScores.seo         ?? null,
+          score_dns:        groupScores.dns         ?? null,
+          score_security:   groupScores.security    ?? null,
+          score_performance: groupScores.performance ?? null,
+          score_tech:       groupScores.tech        ?? null,
+          score_reputation: groupScores.reputation  ?? null,
+        })
+        .eq('id', jobId)
+
+      console.info(`[Audit ${jobId}] Finished successfully.`);
+    } catch (err) {
+      console.error(`[Audit ${jobId}] Background error:`, err);
+      await supabase
+        .from('audit_jobs')
+        .update({ status: 'failed', completed_at: new Date().toISOString() })
+        .eq('id', jobId)
+    }
+  };
+
+  // Kick off background job (non-blocking)
+  performAudit();
+
+  // Return immediately to the client
+  return NextResponse.json({
+    job_id: jobId,
+    status: 'pending',
+    message: 'Audit started in background'
+  });
 }

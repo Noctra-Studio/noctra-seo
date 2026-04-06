@@ -13,7 +13,8 @@ interface AuditProgressBannerProps {
 type BannerState = 'running' | 'completed' | 'failed' | 'idle'
 
 const POLL_INTERVAL_MS = 10_000
-const MAX_ERRORS       = 50
+const MAX_ERRORS       = 10   // Stop if we hit 10 consecutive network errors
+const MAX_POLLS        = 24   // 24 polls * 10s = 4 minutes max wait
 // Delay before first poll after a trigger — gives the API time to create the job record
 const TRIGGER_DELAY_MS = 3_000
 
@@ -48,11 +49,15 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
   }
 
   async function poll() {
-    if (dismissedRef.current || errorCountRef.current >= MAX_ERRORS) {
+    if (dismissedRef.current) return
+
+    if (errorCountRef.current >= MAX_ERRORS || attemptsRef.current >= MAX_POLLS) {
       if (errorCountRef.current >= MAX_ERRORS) {
         console.error('[AuditProgressBanner] Max errors reached, stopping poll.')
-        setState('failed')
+      } else {
+        console.warn('[AuditProgressBanner] Audit timed out after 4 minutes.')
       }
+      setState('failed')
       clearTimer()
       return
     }
