@@ -13,25 +13,14 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { SiteProvider, useSite } from '@/lib/context/SiteContext';
 import { SiteSwitcher } from '@/components/dashboard/SiteSwitcher';
+import { LocaleSwitcher } from '@/components/dashboard/LocaleSwitcher';
+import { useTranslations } from 'next-intl';
 
-const navItems = [
-  { icon: Zap,         label: 'Resumen',         href: '' },
-  { icon: FileText,    label: 'Páginas',          href: '/pages' },
-  { icon: Activity,    label: 'Core Web Vitals',  href: '/vitals' },
-  { icon: Key,         label: 'Keywords',         href: '/keywords' },
-  { icon: Globe,       label: 'GEO',              href: '/geo' },
-  { icon: ScanSearch,  label: 'Auditoría',        href: '/audit' },
-  { icon: Bell,        label: 'Alertas',          href: '/alerts' },
-  { icon: BarChart2,   label: 'Reportes',         href: '/reports' },
-  { icon: Settings,    label: 'Configuración',    href: '/settings' },
-];
-
-// Top-level links (not project-scoped)
-const topLevelItems = [
-  { icon: LayoutGrid, label: 'Mis Sitios', href: '/sites' },
-];
+// Nav items removed from global scope to be defined inside component with translations
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
+  const t = useTranslations('nav');
+  const td = useTranslations('dashboard');
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const params = useParams();
@@ -41,6 +30,22 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   
   const { activeSite } = useSite();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const navItems = [
+    { icon: Zap,         label: t('overview'),    href: '' },
+    { icon: FileText,    label: t('pages'),       href: '/pages' },
+    { icon: Activity,    label: t('vitals'),      href: '/vitals' },
+    { icon: Key,         label: t('keywords'),    href: '/keywords' },
+    { icon: Globe,       label: t('geo'),         href: '/geo' },
+    { icon: ScanSearch,  label: t('audit'),       href: '/audit' },
+    { icon: Bell,        label: t('alerts'),      href: '/alerts' },
+    { icon: BarChart2,   label: t('reports'),     href: '/reports' },
+    { icon: Settings,    label: t('settings'),    href: '/settings' },
+  ];
+
+  const topLevelItems = [
+    { icon: LayoutGrid, label: t('sites'), href: '/sites' },
+  ];
 
   const handleAnalyze = async () => {
     console.log('[Header] Analizar IA clicked. activeSite:', activeSite);
@@ -99,9 +104,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour >= 5 && hour < 12) return 'Buenos días';
-    if (hour >= 12 && hour < 19) return 'Buenas tardes';
-    return 'Buenas noches';
+    if (hour >= 5 && hour < 12) return t('greeting.morning');
+    if (hour >= 12 && hour < 19) return t('greeting.afternoon');
+    return t('greeting.evening');
   };
 
   const basePath = `/${locale}/dashboard/${projectId ?? ''}`;
@@ -192,8 +197,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        {/* Collapse toggle */}
-        <div className="p-3 border-t border-[#1E1E2A]">
+        {/* Language & Collapse toggle */}
+        <div className="p-3 border-t border-[#1E1E2A] space-y-1">
+          <LocaleSwitcher />
           <button
             onClick={() => setCollapsed(!collapsed)}
             className="w-full flex items-center justify-center gap-2.5 px-3 py-2.5 rounded-lg text-[#8B8B9A] hover:text-[#F1F1F5] hover:bg-[#1A1A24] transition-colors text-base font-medium"
@@ -201,7 +207,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             {collapsed ? <ChevronRight size={18} /> : (
               <>
                 <ChevronLeft size={18} />
-                <span>Colapsar</span>
+                <span>{t('collapse')}</span>
               </>
             )}
           </button>
@@ -215,7 +221,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
             <span className="text-xs md:text-sm font-medium text-[#8B8B9A] flex items-center gap-2">
               <span className="opacity-60">{getGreeting()},</span>
-              <span className="text-[#F1F1F5] font-bold">{userName || 'Usuario'}</span>
+              <span className="text-[#F1F1F5] font-bold">{userName || t('userPlaceholder')}</span>
             </span>
           </div>
           <button 
@@ -229,7 +235,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             )}
           >
             <Sparkles size={14} className={cn("transition-transform", isAnalyzing ? "animate-spin" : "group-hover:rotate-12")} />
-            <span className="tracking-tight">{isAnalyzing ? 'Analizando...' : 'Analizar IA'}</span>
+            <span className="tracking-tight">{isAnalyzing ? t('analyzing') : td('analyzeWithAI')}</span>
           </button>
         </header>
 

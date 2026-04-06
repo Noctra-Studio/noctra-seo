@@ -4,6 +4,7 @@ import { useState, useRef } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { X, Loader2, Image as ImageIcon, Upload, Check, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface ProjectSettingsModalProps {
   project: { id: string; name: string; logo_url: string | null } | null;
@@ -13,6 +14,7 @@ interface ProjectSettingsModalProps {
 }
 
 export function ProjectSettingsModal({ project, open, onClose, onUpdate }: ProjectSettingsModalProps) {
+  const t = useTranslations('dashboard.settings');
   const [name, setName] = useState(project?.name || '');
   const [saving, setSaving] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -82,7 +84,7 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
       <div className="w-full max-w-md bg-[#14141C] border border-white/[0.05] rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
         <div className="p-6 border-b border-white/[0.05] flex items-center justify-between">
-          <h3 className="text-xl font-bold text-[#F1F1F5] tracking-tight">Ajustes del Proyecto</h3>
+          <h3 className="text-xl font-bold text-[#F1F1F5] tracking-tight">{t('title')}</h3>
           <button onClick={onClose} className="p-2 hover:bg-white/[0.05] rounded-xl transition-colors">
             <X size={20} className="text-[#8B8B9A]" />
           </button>
@@ -90,18 +92,18 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
 
         <div className="p-6 space-y-6">
           <div className="space-y-2">
-            <label className="text-xs font-bold text-[#8B8B9A] uppercase tracking-widest">Nombre del Proyecto</label>
+            <label className="text-xs font-bold text-[#8B8B9A] uppercase tracking-widest">{t('nameLabel')}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="w-full bg-[#0A0A0F] border border-white/[0.05] rounded-xl px-4 py-3 text-sm text-[#F1F1F5] focus:outline-none focus:border-[#10B981] transition-all"
-              placeholder="Ej: Mi Sitio Web"
+              placeholder={t('namePlaceholder')}
             />
           </div>
 
           <div className="space-y-3">
-            <label className="text-xs font-bold text-[#8B8B9A] uppercase tracking-widest">Logo del Proyecto</label>
+            <label className="text-xs font-bold text-[#8B8B9A] uppercase tracking-widest">{t('logoLabel')}</label>
             
             <div 
               onClick={() => fileInputRef.current?.click()}
@@ -123,8 +125,8 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
                     <ImageIcon size={32} />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-bold text-[#8B8B9A] group-hover:text-[#F1F1F5] transition-colors">Subir imagen</p>
-                    <p className="text-[10px] text-[#4B4B5A] mt-1">Soporta PNG, JPG, WEBP</p>
+                    <p className="text-sm font-bold text-[#8B8B9A] group-hover:text-[#F1F1F5] transition-colors">{t('upload')}</p>
+                    <p className="text-[10px] text-[#4B4B5A] mt-1">{t('formats')}</p>
                   </div>
                 </>
               )}
@@ -141,7 +143,7 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
             {logoFile && (
               <div className="flex items-center gap-2 px-3 py-2 bg-[#10B98110] border border-[#10B98120] rounded-lg">
                 <Check size={12} className="text-[#10B981]" />
-                <span className="text-[10px] font-bold text-[#10B981] uppercase tracking-wider">{logoFile.name} (Listo para subir)</span>
+                <span className="text-[10px] font-bold text-[#10B981] uppercase tracking-wider">{t('ready', { name: logoFile.name })}</span>
               </div>
             )}
           </div>
@@ -152,14 +154,14 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
             onClick={onClose}
             className="flex-1 px-4 py-3 rounded-xl border border-white/[0.05] text-sm font-bold text-[#8B8B9A] hover:bg-white/[0.05] transition-all"
           >
-            Cancelar
+            {t('cancel')}
           </button>
           <button
             onClick={handleSave}
             disabled={saving}
             className="flex-1 px-4 py-3 rounded-xl bg-[#10B981] text-sm font-bold text-black hover:bg-[#0D9469] transition-all flex items-center justify-center gap-2"
           >
-            {saving ? <Loader2 className="animate-spin" size={16} /> : 'Guardar Cambios'}
+            {saving ? <Loader2 className="animate-spin" size={16} /> : t('save')}
           </button>
         </div>
       </div>

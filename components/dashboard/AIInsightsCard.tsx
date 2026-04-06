@@ -1,5 +1,6 @@
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface AIInsight {
   summary?: string;
@@ -16,13 +17,17 @@ interface AIInsightsCardProps {
   loading?: boolean;
 }
 
-const effortConfig = {
-  low: { label: 'Impacto Alto', color: 'text-[#10B981] bg-[#10B98115]' },
-  medium: { label: 'Impacto Medio', color: 'text-[#F59E0B] bg-[#F59E0B15]' },
-  high: { label: 'Impacto Bajo', color: 'text-[#8B8B9A] bg-[#1E1E2A]' },
-};
+// Impact configuration logic moved inside component to use translations
 
 export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
+  const t = useTranslations('dashboard.aiInsights');
+  
+  const effortConfig = {
+    low: { label: t('impact.high'), color: 'text-[#10B981] bg-[#10B98115]' },
+    medium: { label: t('impact.medium'), color: 'text-[#F59E0B] bg-[#F59E0B15]' },
+    high: { label: t('impact.low'), color: 'text-[#8B8B9A] bg-[#1E1E2A]' },
+  };
+
   return (
     <div className="glass-premium p-7 hover:border-[#10B98130] transition-all shadow-2xl relative overflow-hidden group rounded-2xl h-full flex flex-col">
       <div className="absolute top-0 right-0 w-48 h-48 bg-[#10B981]/5 blur-[80px] rounded-full -mr-24 -mt-24 pointer-events-none group-hover:bg-[#10B981]/10 transition-colors" />
@@ -32,7 +37,7 @@ export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
           <Sparkles size={18} className="text-[#10B981]" />
         </div>
         <h3 className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-all font-display">
-          AI Diagnostic Intelligence
+          {t('title')}
         </h3>
       </div>
 
@@ -58,13 +63,13 @@ export function AIInsightsCard({ insight, loading }: AIInsightsCardProps) {
             </div>
           </div>
           <div className="space-y-2">
-            <p className="text-lg font-black text-[#F1F1F5] font-display tracking-tight">Intelligence Pending</p>
+            <p className="text-lg font-black text-[#F1F1F5] font-display tracking-tight">{t('pendingTitle')}</p>
             <p className="text-[11px] text-[#8B8B9A] max-w-[260px] mx-auto leading-relaxed font-medium opacity-60 uppercase tracking-widest">
-              Activate the Noctra Edge Network to enable real-time neural diagnostics.
+              {t('pendingSubtitle')}
             </p>
           </div>
           <button className="text-[10px] font-black text-[#10B981] pt-4 hover:scale-105 transition-transform uppercase tracking-[0.2em] bg-[#10B98108] px-4 py-2 rounded-lg border border-[#10B98120]">
-            System Setup Guide
+            {t('setupGuide')}
           </button>
         </div>
       )}

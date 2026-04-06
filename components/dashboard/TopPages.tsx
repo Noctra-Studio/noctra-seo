@@ -1,5 +1,6 @@
 import { getScoreLabel } from '@/lib/seo/issue-detector';
 import { cn } from '@/lib/utils';
+import { useTranslations } from 'next-intl';
 
 interface PageRow {
   path: string;
@@ -12,17 +13,18 @@ interface TopPagesProps {
 }
 
 export function TopPages({ pages }: TopPagesProps) {
+  const t = useTranslations('dashboard.topPages');
   const hasData = pages && pages.length > 0;
 
   return (
     <div className="glass-premium p-7 hover:border-[#10B98150] transition-all shadow-2xl h-full flex flex-col group rounded-2xl relative overflow-hidden">
       <div className="flex items-center justify-between mb-8 z-10">
         <h3 className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-all font-display">
-          Top Performing Pages
+          {t('title')}
         </h3>
         {hasData && (
           <span className="text-[9px] font-black text-[#8B8B9A] uppercase tracking-[0.15em] opacity-40">
-            Analytics
+            {t('analytics')}
           </span>
         )}
       </div>
@@ -66,7 +68,7 @@ export function TopPages({ pages }: TopPagesProps) {
               <span className="text-2xl">📄</span>
             </div>
             <p className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.15em] text-center max-w-[180px] leading-relaxed">
-              Connect the CDN to visualize your domain traffic
+              {t('empty')}
             </p>
           </div>
         )}

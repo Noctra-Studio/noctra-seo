@@ -21,9 +21,20 @@
     "vitals": "Core Web Vitals",
     "keywords": "Palabras clave",
     "geo": "GEO",
+    "audit": "Auditoría",
     "alerts": "Alertas",
     "reports": "Reportes",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "sites": "Mis Sitios",
+    "switchLocale": "Cambiar idioma",
+    "collapse": "Colapsar",
+    "userPlaceholder": "Usuario",
+    "analyzing": "Analizando...",
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    }
   },
   "dashboard": {
     "seoScore": "Puntuación SEO",
@@ -33,16 +44,112 @@
     "vsLastWeek": "vs semana anterior",
     "viewAll": "Ver todas",
     "analyzeWithAI": "Analizar con IA",
-    "trafficByChannel": "Tráfico por canal",
-    "topPages": "Top páginas",
-    "criticalIssues": "Problemas críticos",
-    "howToFix": "Cómo solucionarlo",
-    "aiInsights": "Insights de IA",
-    "scrollDepth": "Profundidad de navegación",
-    "timeOnPage": "Tiempo en la página",
-    "bounceRate": "Porcentaje de rebote"
+    "edit": "Editar",
+    "tagline": "Insights de rendimiento global",
+    "organicVisitsLabel": "visitas orgánicas",
+    "securityAlerts": "Seguridad y Alertas",
+    "systemHealthy": "Sistema Saludable",
+    "noIssuesDetected": "No se detectaron problemas",
+    "critical": "Crítico",
+    "actionRequired": "Acción requerida",
+    "warnings": "Advertencias",
+    "optimizable": "Optimizable",
+    "networkStatus": {
+      "healthy": "Red Saludable",
+      "disconnected": "Red Desconectada",
+      "pending": "Configuración Pendiente"
+    },
+    "vitals": {
+      "title": "Core Web Vitals",
+      "empty": "Sin Datos",
+      "status": {
+        "good": "Bueno",
+        "needs-improvement": "Mejorable",
+        "poor": "Pobre",
+        "unknown": "Sin datos"
+      },
+      "lcp": {
+        "desc": "Largest Contentful Paint: Mide el tiempo que tarda en cargar el elemento de contenido más grande de la página.",
+        "importance": "Es clave para la percepción de velocidad del usuario."
+      },
+      "cls": {
+        "desc": "Cumulative Layout Shift: Mide la estabilidad visual y cuántas veces cambian los elementos de posición inesperadamente.",
+        "importance": "Evita que los usuarios hagan clic en lugares erróneos por saltos de página."
+      },
+      "inp": {
+        "desc": "Interaction to Next Paint: Mide la respuesta de la página a las interacciones del usuario (clics, teclas).",
+        "importance": "Garantiza que la interfaz se sienta fluida y responsiva."
+      }
+    },
+    "settings": {
+      "title": "Ajustes del Proyecto",
+      "nameLabel": "Nombre del Proyecto",
+      "namePlaceholder": "Ej: Mi Sitio Web",
+      "logoLabel": "Logo del Proyecto",
+      "upload": "Subir imagen",
+      "formats": "Soporta PNG, JPG, WEBP",
+      "ready": "{name} (Listo para subir)",
+      "cancel": "Cancelar",
+      "save": "Guardar Cambios"
+    },
+    "dateRange": {
+      "7d": "7d",
+      "30d": "30d",
+      "90d": "90d"
+    },
+    "topPages": {
+      "title": "Páginas con mejor rendimiento",
+      "analytics": "Analítica",
+      "empty": "Conecta el CDN para visualizar el tráfico de tu dominio"
+    },
+    "traffic": {
+      "title": "Adquisición de Tráfico",
+      "empty": "Esperando ingesta de analíticas...",
+      "channels": {
+        "organic_search": "Orgánico",
+        "direct": "Directo",
+        "referral": "Referral",
+        "social": "Social",
+        "paid_search": "Pagado"
+      }
+    },
+    "issues": {
+      "title": "Riesgos SEO Críticos",
+      "detected": "{count} Detectados",
+      "solve": "Resolver",
+      "emptyTitle": "Estado Inmaculado",
+      "emptySubtitle": "Cero Vulnerabilidades Críticas",
+      "labels": {
+        "missing_title": "Sin etiqueta <title>",
+        "long_title": "Título demasiado largo",
+        "short_title": "Título demasiado corto",
+        "missing_meta": "Sin meta description",
+        "long_meta": "Meta description larga",
+        "short_meta": "Meta description corta",
+        "missing_h1": "Sin etiqueta H1",
+        "no_canonical": "Sin URL canónica",
+        "noindex": "Página bloqueada (noindex)",
+        "thin_content": "Contenido escaso",
+        "missing_alt": "Imágenes sin alt",
+        "missing_schema": "Sin structured data",
+        "missing_og_title": "Sin og:title",
+        "missing_og_image": "Sin og:image"
+      }
+    },
+    "aiInsights": {
+      "title": "Inteligencia Diagnóstica IA",
+      "pendingTitle": "Inteligencia Pendiente",
+      "pendingSubtitle": "Activa la Red Noctra para habilitar diagnósticos neuronales en tiempo real.",
+      "setupGuide": "Guía de Configuración",
+      "impact": {
+        "high": "Impacto Alto",
+        "medium": "Impacto Medio",
+        "low": "Impacto Bajo"
+      }
+    }
   },
   "alerts": {
+    "title": "Alertas",
     "critical": "Crítica",
     "warning": "Advertencia",
     "info": "Información",
@@ -50,16 +157,34 @@
     "acknowledged": "Reconocida",
     "resolved": "Resuelta",
     "acknowledge": "Marcar como reconocida",
-    "viewAffectedPage": "Ver página afectada",
+    "viewAffectedPage": "Ver página",
     "ignore": "Ignorar",
     "analyzing": "Claude está analizando este problema...",
-    "impact": "Este problema te está impactando en:",
-    "howToFix": "Cómo solucionarlo:",
+    "impactTitle": "Este problema te está impactando en:",
+    "howToFixTitle": "Cómo solucionarlo:",
     "expectedResult": "Resultado esperado:",
+    "affectedUrl": "URL afectada:",
+    "currentValue": "Valor actual",
+    "threshold": "Umbral",
+    "aiAnalysis": "Análisis IA",
+    "recoveryEst": "Recuperación estimada: {days} días",
+    "aiError": "No se pudo generar el análisis automático.",
     "effort": {
       "low": "Fácil",
       "medium": "Medio",
-      "high": "Compleja"
+      "high": "Complejo"
+    },
+    "types": {
+      "lcp_degraded": "LCP Degradado",
+      "cls_degraded": "CLS Degradado",
+      "inp_degraded": "INP Degradado",
+      "seo_score_drop": "SEO Score Bajo",
+      "page_missing_title": "Página sin título",
+      "page_missing_h1": "Página sin H1",
+      "bounce_rate_spike": "Spike de rebote",
+      "position_drop": "Caída de posición",
+      "geo_visibility_lost": "Visibilidad GEO perdida",
+      "anomaly_detected": "Anomalía detectada"
     }
   },
   "onboarding": {
@@ -302,5 +427,16 @@
         "contact": "Contacto"
       }
     }
+  },
+  "switcher": {
+    "selectSite": "Seleccionar sitio",
+    "noSites": "Sin sitios todavía",
+    "addSite": "Agregar sitio"
+  },
+  "audit": {
+    "running": "Tu auditoría está en progreso — los resultados aparecerán en breve...",
+    "completed": "¡Auditoría completada! Los scores han sido actualizados.",
+    "failed": "La auditoría encontró un error. Puedes volver a intentarlo.",
+    "close": "Cerrar"
   }
 }

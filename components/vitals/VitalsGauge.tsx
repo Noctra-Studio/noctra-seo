@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Info, TrendingUp, TrendingDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 interface VitalConfig {
   id: 'LCP' | 'CLS' | 'INP';
@@ -15,47 +16,7 @@ interface VitalConfig {
   importance: string;
 }
 
-const VITALS_INFO: Record<'LCP' | 'CLS' | 'INP', { name: string; unit: string; goodMax: number; poorMin: number; desc: string; importance: string }> = {
-  LCP: {
-    name: 'LCP',
-    unit: 's',
-    goodMax: 2500,
-    poorMin: 4000,
-    desc: "Largest Contentful Paint: Mide el tiempo que tarda en cargar el elemento de contenido más grande de la página.",
-    importance: "Es clave para la percepción de velocidad del usuario."
-  },
-  CLS: {
-    name: 'CLS',
-    unit: '',
-    goodMax: 0.1,
-    poorMin: 0.25,
-    desc: "Cumulative Layout Shift: Mide la estabilidad visual y cuántas veces cambian los elementos de posición inesperadamente.",
-    importance: "Evita que los usuarios hagan clic en lugares erróneos por saltos de página."
-  },
-  INP: {
-    name: 'INP',
-    unit: 'ms',
-    goodMax: 200,
-    poorMin: 500,
-    desc: "Interaction to Next Paint: Mide la respuesta de la página a las interacciones del usuario (clics, teclas).",
-    importance: "Garantiza que la interfaz se sienta fluida y responsiva."
-  }
-};
-
-function getStatus(value: number | null, good: number, poor: number): 'good' | 'needs-improvement' | 'poor' | 'unknown' {
-  if (value === null) return 'unknown';
-  if (value <= good) return 'good';
-  if (value < poor) return 'needs-improvement';
-  return 'poor';
-}
-
-const statusConfig = {
-  good: { label: 'Bueno', color: 'text-[#10B981]', bg: 'bg-[#10B98115]', dot: 'bg-[#10B981]' },
-  'needs-improvement': { label: 'Mejorable', color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B15]', dot: 'bg-[#F59E0B]' },
-  poor: { label: 'Pobre', color: 'text-[#EF4444]', bg: 'bg-[#EF444415]', dot: 'bg-[#EF4444]' },
-  unknown: { label: 'Sin datos', color: 'text-[#8B8B9A]', bg: 'bg-white/5', dot: 'bg-[#8B8B9A]' },
-};
-
+// Config moved inside component to use translations
 interface VitalsGaugeProps {
   lcp?: number | null;
   lcpTrend?: number;
@@ -67,7 +28,49 @@ interface VitalsGaugeProps {
 }
 
 export function VitalsGauge({ lcp, lcpTrend, cls, clsTrend, inp, inpTrend, className }: VitalsGaugeProps) {
+  const t = useTranslations('dashboard.vitals');
   const [hoveredVital, setHoveredVital] = useState<string | null>(null);
+
+  const VITALS_INFO = {
+    LCP: {
+      name: 'LCP',
+      unit: 's',
+      goodMax: 2500,
+      poorMin: 4000,
+      desc: t('lcp.desc'),
+      importance: t('lcp.importance')
+    },
+    CLS: {
+      name: 'CLS',
+      unit: '',
+      goodMax: 0.1,
+      poorMin: 0.25,
+      desc: t('cls.desc'),
+      importance: t('cls.importance')
+    },
+    INP: {
+      name: 'INP',
+      unit: 'ms',
+      goodMax: 200,
+      poorMin: 500,
+      desc: t('inp.desc'),
+      importance: t('inp.importance')
+    }
+  };
+
+  const statusConfig = {
+    good: { label: t('status.good'), color: 'text-[#10B981]', bg: 'bg-[#10B98115]', dot: 'bg-[#10B981]' },
+    'needs-improvement': { label: t('status.needs-improvement'), color: 'text-[#F59E0B]', bg: 'bg-[#F59E0B15]', dot: 'bg-[#F59E0B]' },
+    poor: { label: t('status.poor'), color: 'text-[#EF4444]', bg: 'bg-[#EF444415]', dot: 'bg-[#EF4444]' },
+    unknown: { label: t('status.unknown'), color: 'text-[#8B8B9A]', bg: 'bg-white/5', dot: 'bg-[#8B8B9A]' },
+  };
+
+  function getStatus(value: number | null, good: number, poor: number): 'good' | 'needs-improvement' | 'poor' | 'unknown' {
+    if (value === null) return 'unknown';
+    if (value <= good) return 'good';
+    if (value < poor) return 'needs-improvement';
+    return 'poor';
+  }
 
   const vitals = [
     { ...VITALS_INFO.LCP, value: lcp ?? null, trend: lcpTrend ?? 0 },
@@ -80,10 +83,10 @@ export function VitalsGauge({ lcp, lcpTrend, cls, clsTrend, inp, inpTrend, class
   return (
     <div className={cn("glass-premium p-7 flex flex-col gap-6 hover:border-[#10B98150] transition-all cursor-pointer shadow-2xl group relative rounded-2xl", className)}>
       <div className="flex items-center justify-between z-10">
-        <span className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.15em] opacity-70">Core Web Vitals</span>
+        <span className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.15em] opacity-70">{t('title')}</span>
         {!hasData && (
           <div className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[9px] font-black text-[#8B8B9A] uppercase tracking-widest">
-            Sin Datos
+            {t('empty')}
           </div>
         )}
       </div>

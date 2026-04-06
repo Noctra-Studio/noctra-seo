@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, ExternalLink, CheckCircle, XCircle, AlertTriangle, Sparkles, Clock, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTranslations, useLocale } from 'next-intl';
 
 export interface Alert {
   id: string;
@@ -40,50 +41,41 @@ interface AlertPanelProps {
   onIgnore?: (id: string) => void;
 }
 
-const severityConfig = {
-  critical: {
-    label: 'Crítica',
-    icon: XCircle,
-    color: 'text-[#EF4444]',
-    bg: 'bg-[#EF444415]',
-    border: 'border-[#EF444430]',
-  },
-  warning: {
-    label: 'Advertencia',
-    icon: AlertTriangle,
-    color: 'text-[#F59E0B]',
-    bg: 'bg-[#F59E0B15]',
-    border: 'border-[#F59E0B30]',
-  },
-  info: {
-    label: 'Información',
-    icon: AlertTriangle,
-    color: 'text-[#10B981]',
-    bg: 'bg-[#10B98115]',
-    border: 'border-[#10B98130]',
-  },
-};
-
-const effortConfig = {
-  low: { label: 'Fácil', color: 'text-[#10B981] bg-[#10B98115]' },
-  medium: { label: 'Medio', color: 'text-[#F59E0B] bg-[#F59E0B15]' },
-  high: { label: 'Complejo', color: 'text-[#EF4444] bg-[#EF444415]' },
-};
-
-const ALERT_TYPE_LABELS: Record<string, string> = {
-  lcp_degraded: 'LCP Degradado',
-  cls_degraded: 'CLS Degradado',
-  inp_degraded: 'INP Degradado',
-  seo_score_drop: 'SEO Score Bajo',
-  page_missing_title: 'Página sin título',
-  page_missing_h1: 'Página sin H1',
-  bounce_rate_spike: 'Spike de rebote',
-  position_drop: 'Caída de posición',
-  geo_visibility_lost: 'Visibilidad GEO perdida',
-  anomaly_detected: 'Anomalía detectada',
-};
+// Config logic moved inside component to use translations
 
 export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: AlertPanelProps) {
+  const t = useTranslations('alerts');
+  const locale = useLocale();
+  
+  const severityConfig = {
+    critical: {
+      label: t('critical'),
+      icon: XCircle,
+      color: 'text-[#EF4444]',
+      bg: 'bg-[#EF444415]',
+      border: 'border-[#EF444430]',
+    },
+    warning: {
+      label: t('warning'),
+      icon: AlertTriangle,
+      color: 'text-[#F59E0B]',
+      bg: 'bg-[#F59E0B15]',
+      border: 'border-[#F59E0B30]',
+    },
+    info: {
+      label: t('info'),
+      icon: AlertTriangle,
+      color: 'text-[#10B981]',
+      bg: 'bg-[#10B98115]',
+      border: 'border-[#10B98130]',
+    },
+  };
+
+  const effortConfig = {
+    low: { label: t('effort.low'), color: 'text-[#10B981] bg-[#10B98115]' },
+    medium: { label: t('effort.medium'), color: 'text-[#F59E0B] bg-[#F59E0B15]' },
+    high: { label: t('effort.high'), color: 'text-[#EF4444] bg-[#EF444415]' },
+  };
   // Close on Escape
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
@@ -126,7 +118,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                 </div>
                 <div>
                   <h2 className="font-semibold text-sm text-[#F1F1F5]">
-                    {ALERT_TYPE_LABELS[alert.type] ?? alert.type}
+                    {t(`types.${alert.type}`)}
                   </h2>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={cn('text-[10px] font-medium px-1.5 py-0.5 rounded border', cfg.color, cfg.bg, cfg.border)}>
@@ -134,7 +126,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                     </span>
                     <span className="flex items-center gap-1 text-[10px] text-[#8B8B9A]">
                       <Clock size={10} />
-                      {detectedDate.toLocaleDateString('es', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                      {detectedDate.toLocaleDateString(locale, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
                 </div>
@@ -153,7 +145,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
               {/* Affected path */}
               {alert.affected_path && (
                 <div className="flex items-center gap-2 p-3 bg-[#14141C] rounded-lg border border-[#1E1E2A]">
-                  <span className="text-xs text-[#8B8B9A]">URL afectada:</span>
+                  <span className="text-xs text-[#8B8B9A]">{t('affectedUrl')}</span>
                   <span className="font-mono text-xs text-[#10B981] truncate">{alert.affected_path}</span>
                 </div>
               )}
@@ -162,14 +154,14 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
               {alert.metric_name && alert.metric_value !== null && alert.metric_value !== undefined && (
                 <div className="grid grid-cols-2 gap-3">
                   <div className="p-3 bg-[#14141C] rounded-lg border border-[#1E1E2A]">
-                    <p className="text-[10px] text-[#8B8B9A] mb-1">Valor actual</p>
+                    <p className="text-[10px] text-[#8B8B9A] mb-1">{t('currentValue')}</p>
                     <p className={cn('font-mono font-bold text-xl', cfg.color)}>
                       {alert.metric_value}
                     </p>
                   </div>
                   {alert.metric_threshold !== null && alert.metric_threshold !== undefined && (
                     <div className="p-3 bg-[#14141C] rounded-lg border border-[#1E1E2A]">
-                      <p className="text-[10px] text-[#8B8B9A] mb-1">Umbral</p>
+                      <p className="text-[10px] text-[#8B8B9A] mb-1">{t('threshold')}</p>
                       <p className="font-mono font-bold text-xl text-[#8B8B9A]">
                         {alert.metric_threshold}
                       </p>
@@ -183,7 +175,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
                     <Sparkles size={14} className="text-[#10B981] animate-pulse" />
-                    <span className="text-xs text-[#8B8B9A]">Claude está analizando este problema...</span>
+                    <span className="text-xs text-[#8B8B9A]">{t('analyzing')}</span>
                   </div>
                   <Skeleton className="h-4 w-full bg-[#1E1E2A]" />
                   <Skeleton className="h-4 w-4/5 bg-[#1E1E2A]" />
@@ -202,7 +194,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   <div className="p-4 bg-[#10B98108] border border-[#10B98120] rounded-lg">
                     <div className="flex items-center gap-2 mb-2">
                       <Sparkles size={12} className="text-[#10B981]" />
-                      <span className="text-[10px] text-[#10B981] font-medium uppercase tracking-wider">Análisis IA</span>
+                      <span className="text-[10px] text-[#10B981] font-medium uppercase tracking-wider">{t('aiAnalysis')}</span>
                     </div>
                     <p className="text-sm text-[#C5C5D0] leading-relaxed">
                       {alert.ai_analysis.summary}
@@ -213,7 +205,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   {alert.ai_analysis.impact?.length > 0 && (
                     <div>
                       <h4 className="text-xs font-medium text-[#8B8B9A] uppercase tracking-wider mb-2">
-                        Este problema te está impactando en:
+                        {t('impactTitle')}
                       </h4>
                       <ul className="space-y-1.5">
                         {alert.ai_analysis.impact.map((item, i) => (
@@ -230,7 +222,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   {alert.ai_analysis.actions?.length > 0 && (
                     <div>
                       <h4 className="text-xs font-medium text-[#8B8B9A] uppercase tracking-wider mb-2">
-                        Cómo solucionarlo:
+                        {t('howToFixTitle')}
                       </h4>
                       <div className="space-y-2">
                         {alert.ai_analysis.actions.map((action) => {
@@ -248,7 +240,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                                   <p className="text-xs text-[#F1F1F5] leading-relaxed">{action.instruction}</p>
                                   {action.expected_result && (
                                     <p className="text-[11px] text-[#8B8B9A] mt-1.5">
-                                      <span className="text-[#10B981]">→</span> {action.expected_result}
+                                      <span className="text-[#10B981]">→</span> {t('expectedResult')} {action.expected_result}
                                     </p>
                                   )}
                                 </div>
@@ -267,7 +259,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   {alert.ai_analysis.estimated_recovery_days && (
                     <div className="flex items-center gap-2 text-xs text-[#8B8B9A]">
                       <Clock size={12} />
-                      Recuperación estimada: {alert.ai_analysis.estimated_recovery_days} días
+                      {t('recoveryEst', { days: alert.ai_analysis.estimated_recovery_days })}
                     </div>
                   )}
                 </>
@@ -275,7 +267,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
 
               {alert.ai_analysis_status === 'failed' && (
                 <div className="p-3 bg-[#EF444408] border border-[#EF444420] rounded-lg text-xs text-[#8B8B9A]">
-                  No se pudo generar el análisis automático.
+                  {t('aiError')}
                 </div>
               )}
             </div>
@@ -288,7 +280,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#10B98115] border border-[#10B98130] text-[#10B981] text-xs font-medium hover:bg-[#10B98125] transition-colors"
                 >
                   <CheckCircle size={13} />
-                  Reconocida
+                  {t('acknowledged')}
                 </button>
               )}
               {alert.affected_path && (
@@ -299,7 +291,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-md bg-[#14141C] border border-[#1E1E2A] text-[#8B8B9A] text-xs font-medium hover:text-[#F1F1F5] hover:border-[#2A2A38] transition-colors"
                 >
                   <ExternalLink size={13} />
-                  Ver página
+                  {t('viewAffectedPage')}
                 </a>
               )}
               {onIgnore && (
@@ -307,7 +299,7 @@ export function AlertPanel({ alert, open, onClose, onAcknowledge, onIgnore }: Al
                   onClick={() => onIgnore(alert.id)}
                   className="px-3 py-2 rounded-md text-[#8B8B9A] text-xs font-medium hover:text-[#F1F1F5] hover:bg-[#1A1A24] transition-colors"
                 >
-                  Ignorar
+                  {t('ignore')}
                 </button>
               )}
             </div>

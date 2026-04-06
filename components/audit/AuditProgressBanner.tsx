@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, X, CheckCircle, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 
 interface AuditProgressBannerProps {
   domainId: string   // domains.id UUID
@@ -17,6 +18,7 @@ const MAX_ERRORS       = 50
 const TRIGGER_DELAY_MS = 3_000
 
 export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
+  const t = useTranslations('audit')
   const [state, _setState]       = useState<BannerState>('idle')
   const [dismissed, _setDismissed] = useState(false)
   const router = useRouter()
@@ -143,15 +145,15 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
       {state === 'failed'    && <AlertCircle size={15} className="shrink-0" />}
 
       <span>
-        {state === 'running'   && 'Tu auditoría está en progreso — los resultados aparecerán en breve...'}
-        {state === 'completed' && '¡Auditoría completada! Los scores han sido actualizados.'}
-        {state === 'failed'    && 'La auditoría encontró un error. Puedes volver a intentarlo.'}
+        {state === 'running'   && t('running')}
+        {state === 'completed' && t('completed')}
+        {state === 'failed'    && t('failed')}
       </span>
 
       <button
         onClick={() => setDismissed(true)}
         className="ml-auto shrink-0 opacity-60 hover:opacity-100 transition-opacity"
-        aria-label="Cerrar"
+        aria-label={t('close')}
       >
         <X size={14} />
       </button>

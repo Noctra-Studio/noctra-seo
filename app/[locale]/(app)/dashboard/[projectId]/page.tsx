@@ -17,6 +17,7 @@ import { subDays, format, isAfter } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuditProgressBanner } from '@/components/audit/AuditProgressBanner';
+import { useTranslations } from 'next-intl';
 
 interface DomainData {
   id: string;
@@ -50,6 +51,7 @@ interface OverviewData {
 }
 
 export default function DashboardOverview() {
+  const t = useTranslations('dashboard');
   const params = useParams();
   const router = useRouter();
   const projectId = params?.projectId as string;
@@ -298,7 +300,7 @@ export default function DashboardOverview() {
                 )}
                 {/* Upload overlay */}
                 <div className="absolute inset-0 bg-[#10B98120] backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                  <span className="text-[10px] font-extrabold text-white uppercase tracking-widest bg-[#10B981] px-2 py-1 rounded-md">Editar</span>
+                  <span className="text-[10px] font-extrabold text-white uppercase tracking-widest bg-[#10B981] px-2 py-1 rounded-md">{t('edit')}</span>
                 </div>
               </div>
               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-[#0A0A0F] border border-white/[0.05] rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -325,7 +327,7 @@ export default function DashboardOverview() {
                     "w-1.5 h-1.5 rounded-full shrink-0 shadow-[0_0_8px_currentColor]",
                     domain?.tracker_installed ? "bg-[#10B981]" : domain?.first_pageview_at ? "bg-[#EF4444]" : "bg-[#8B8B9A] animate-pulse"
                   )} />
-                  {domain?.tracker_installed ? 'Network Healthy' : domain?.first_pageview_at ? 'Network Disconnected' : 'Pending Setup'}
+                  {domain?.tracker_installed ? t('networkStatus.healthy') : domain?.first_pageview_at ? t('networkStatus.disconnected') : t('networkStatus.pending')}
                 </motion.div>
               </div>
 
@@ -341,7 +343,7 @@ export default function DashboardOverview() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="opacity-40 group-hover/link:opacity-100"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                   </div>
                 </a>
-                <p className="text-[10px] text-[#8B8B9A] font-bold uppercase tracking-[0.2em] opacity-60">Global Performance Insights</p>
+                <p className="text-[10px] text-[#8B8B9A] font-bold uppercase tracking-[0.2em] opacity-60">{t('tagline')}</p>
               </div>
             </div>
           </div>
@@ -364,7 +366,7 @@ export default function DashboardOverview() {
         >
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} className="h-full">
             <ScoreCard
-              title="SEO Score"
+              title={t('seoScore')}
               score={data?.seoScore ?? 0}
               trend={data?.seoScoreTrend ?? 0}
               showGauge
@@ -386,11 +388,11 @@ export default function DashboardOverview() {
           
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} className="h-full">
             <ScoreCard
-              title="Tráfico Orgánico"
+              title={t('organicTraffic')}
               score={data?.organicVisits ?? 0}
               trend={data?.organicTrend ?? 0}
               sparklineData={data?.organicSparkline}
-              subtitle="visitas orgánicas"
+              subtitle={t('organicVisitsLabel')}
               className="h-full"
             />
           </motion.div>
@@ -401,7 +403,7 @@ export default function DashboardOverview() {
               onClick={() => router.push(`/dashboard/${projectId}/alerts`)}
             >
               <div className="flex items-center justify-between z-10">
-                <span className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.15em]">Security & Alerts</span>
+                <span className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.15em]">{t('securityAlerts')}</span>
                 <div className="p-2 bg-white/[0.03] rounded-xl group-hover:bg-[#10B98110] transition-colors border border-white/[0.05]">
                   <Bell size={18} className="text-[#8B8B9A] group-hover:text-[#10B981]" />
                 </div>
@@ -414,8 +416,8 @@ export default function DashboardOverview() {
                       <CheckCircle size={28} className="text-[#10B981]" />
                     </div>
                     <div className="space-y-1">
-                      <p className="text-sm font-bold text-[#F1F1F5] font-display">System Healthy</p>
-                      <p className="text-[10px] text-[#8B8B9A] px-2 leading-tight font-medium opacity-60 uppercase tracking-widest">No issues detected</p>
+                      <p className="text-sm font-bold text-[#F1F1F5] font-display">{t('systemHealthy')}</p>
+                      <p className="text-[10px] text-[#8B8B9A] px-2 leading-tight font-medium opacity-60 uppercase tracking-widest">{t('noIssuesDetected')}</p>
                     </div>
                   </div>
                 ) : (
@@ -426,8 +428,8 @@ export default function DashboardOverview() {
                           {data?.activeAlerts.critical ?? 0}
                         </span>
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-black text-[#EF4444] uppercase tracking-widest">Critical</span>
-                          <span className="text-[9px] text-[#8B8B9A] uppercase tracking-tighter opacity-50">Action required</span>
+                          <span className="text-[10px] font-black text-[#EF4444] uppercase tracking-widest">{t('critical')}</span>
+                          <span className="text-[9px] text-[#8B8B9A] uppercase tracking-tighter opacity-50">{t('actionRequired')}</span>
                         </div>
                       </div>
                     </div>
@@ -437,8 +439,8 @@ export default function DashboardOverview() {
                           {data?.activeAlerts.warning ?? 0}
                         </span>
                         <div className="flex flex-col">
-                          <span className="text-[10px] font-black text-[#F59E0B] uppercase tracking-widest">Warnings</span>
-                          <span className="text-[9px] text-[#8B8B9A] uppercase tracking-tighter opacity-50">Optimizable</span>
+                          <span className="text-[10px] font-black text-[#F59E0B] uppercase tracking-widest">{t('warnings')}</span>
+                          <span className="text-[9px] text-[#8B8B9A] uppercase tracking-tighter opacity-50">{t('optimizable')}</span>
                         </div>
                       </div>
                     </div>

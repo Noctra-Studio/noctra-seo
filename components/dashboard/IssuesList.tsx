@@ -3,6 +3,7 @@
 import { AlertTriangle, XCircle, ChevronRight, CheckCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 
 interface Issue {
   type: string;
@@ -17,23 +18,10 @@ interface IssuesListProps {
   onFix?: (issue: Issue) => void;
 }
 
-const ISSUE_TYPE_LABELS: Record<string, string> = {
-  missing_title: 'Sin etiqueta <title>',
-  long_title: 'Título demasiado largo',
-  short_title: 'Título demasiado corto',
-  missing_meta: 'Sin meta description',
-  long_meta: 'Meta description larga',
-  missing_h1: 'Sin etiqueta H1',
-  no_canonical: 'Sin URL canónica',
-  noindex: 'Página bloqueada (noindex)',
-  thin_content: 'Contenido escaso',
-  missing_alt: 'Imágenes sin alt',
-  missing_schema: 'Sin structured data',
-  missing_og_title: 'Sin og:title',
-  missing_og_image: 'Sin og:image',
-};
+// Moved hardcoded labels from global scope to use translations inside component
 
 export function IssuesList({ issues, onFix }: IssuesListProps) {
+  const t = useTranslations('dashboard.issues');
   const criticalIssues = issues.filter(i => i.severity === 'critical');
   const hasData = criticalIssues.length > 0;
 
@@ -41,11 +29,11 @@ export function IssuesList({ issues, onFix }: IssuesListProps) {
     <div className="glass-premium p-7 hover:border-[#EF444430] transition-all shadow-2xl h-full flex flex-col group rounded-2xl relative overflow-hidden">
       <div className="flex items-center justify-between mb-8 z-10">
         <h3 className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-all font-display">
-          Critical SEO Hazards
+          {t('title')}
         </h3>
         {hasData && (
           <span className="text-[9px] font-black text-[#EF4444] bg-[#EF444410] border border-[#EF444420] px-2.5 py-1 rounded-md uppercase tracking-[0.1em] shadow-[0_0_10px_#EF444415]">
-            {criticalIssues.length} Detected
+            {t('detected', { count: criticalIssues.length })}
           </span>
         )}
       </div>
@@ -68,7 +56,7 @@ export function IssuesList({ issues, onFix }: IssuesListProps) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-4">
                 <p className="text-sm font-extrabold text-[#F1F1F5] truncate font-display tracking-tight">
-                  {ISSUE_TYPE_LABELS[issue.type] ?? issue.type}
+                  {t(`labels.${issue.type}`)}
                 </p>
                 {onFix && (
                   <button
@@ -78,7 +66,7 @@ export function IssuesList({ issues, onFix }: IssuesListProps) {
                     }}
                     className="shrink-0 text-[10px] font-black text-[#10B981] flex items-center gap-1.5 uppercase tracking-[0.1em] bg-[#10B98110] border border-[#10B98120] px-3 py-1.5 rounded-lg opacity-60 group-hover/issue:opacity-100 group-hover/issue:bg-[#10B98115] transition-all hover:scale-105 active:scale-95"
                   >
-                    Solve
+                    {t('solve')}
                     <ChevronRight size={12} className="group-hover/issue:translate-x-0.5 transition-transform" />
                   </button>
                 )}
@@ -107,9 +95,9 @@ export function IssuesList({ issues, onFix }: IssuesListProps) {
               </div>
             </div>
             <div className="space-y-1.5 text-center">
-              <p className="text-base font-black text-[#F1F1F5] font-display tracking-tight">Immaculate Status</p>
+              <p className="text-base font-black text-[#F1F1F5] font-display tracking-tight">{t('emptyTitle')}</p>
               <p className="text-[10px] text-[#8B8B9A] font-extrabold uppercase tracking-[0.2em] leading-relaxed opacity-60">
-                Zero Critical Vulnerabilities
+                {t('emptySubtitle')}
               </p>
             </div>
           </div>

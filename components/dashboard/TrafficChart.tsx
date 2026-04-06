@@ -6,6 +6,7 @@ import {
 } from 'recharts';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { useTranslations } from 'next-intl';
 
 interface TrafficDataPoint {
   date: string;
@@ -20,13 +21,7 @@ interface TrafficChartProps {
   data: TrafficDataPoint[];
 }
 
-const CHANNELS = [
-  { key: 'organic_search', label: 'Orgánico', color: '#10B981' },
-  { key: 'direct', label: 'Directo', color: '#10B981' },
-  { key: 'referral', label: 'Referral', color: '#F59E0B' },
-  { key: 'social', label: 'Social', color: '#EC4899' },
-  { key: 'paid_search', label: 'Pagado', color: '#8B5CF6' },
-];
+// Removed hardcoded channels array from global scope to use translations inside component
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
@@ -49,13 +44,22 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export function TrafficChart({ data }: TrafficChartProps) {
+  const t = useTranslations('dashboard.traffic');
   const hasData = data && data.length > 0;
+
+  const CHANNELS = [
+    { key: 'organic_search', label: t('channels.organic_search'), color: '#10B981' },
+    { key: 'direct', label: t('channels.direct'), color: '#10B981' },
+    { key: 'referral', label: t('channels.referral'), color: '#F59E0B' },
+    { key: 'social', label: t('channels.social'), color: '#EC4899' },
+    { key: 'paid_search', label: t('channels.paid_search'), color: '#8B5CF6' },
+  ];
 
   return (
     <div className="glass-premium p-7 hover:border-[#10B98150] transition-all shadow-2xl group rounded-2xl relative overflow-hidden">
       <div className="flex items-center justify-between mb-8 z-10">
         <h3 className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.2em] opacity-70 group-hover:opacity-100 transition-all font-display">
-          Traffic Acquisition
+          {t('title')}
         </h3>
         {hasData && (
           <div className="flex items-center gap-6">
@@ -75,7 +79,7 @@ export function TrafficChart({ data }: TrafficChartProps) {
             <div className="w-16 h-16 bg-white/[0.02] rounded-full border border-white/[0.05] flex items-center justify-center squircle">
               <span className="text-2xl">📊</span>
             </div>
-            <p className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-widest">Awaiting ingestion analytics...</p>
+            <p className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-widest">{t('empty')}</p>
           </div>
         ) : (
           <ResponsiveContainer width="100%" height="100%">

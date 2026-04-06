@@ -6,6 +6,7 @@ import { Globe, ChevronDown, Check, Plus } from 'lucide-react'
 import { useSite } from '@/lib/context/SiteContext'
 import { AddSiteModal } from './AddSiteModal'
 import { cn } from '@/lib/utils'
+import { useTranslations } from 'next-intl'
 import type { Site } from '@/lib/types/sites'
 
 interface FaviconProps {
@@ -48,6 +49,7 @@ interface SiteSwitcherProps {
 }
 
 export function SiteSwitcher({ collapsed = false }: SiteSwitcherProps) {
+  const t = useTranslations('switcher')
   const { sites, activeSite, isLoading, setActiveSite } = useSite()
 
   const [open,         setOpen]         = useState(false)
@@ -71,7 +73,7 @@ export function SiteSwitcher({ collapsed = false }: SiteSwitcherProps) {
     setOpen(false)
   }
 
-  const displayName = activeSite?.name ?? (isLoading ? '...' : 'Seleccionar sitio')
+  const displayName = activeSite?.name ?? (isLoading ? '...' : t('selectSite'))
   const truncated   = displayName.length > 20 ? displayName.slice(0, 20) + '…' : displayName
 
   if (collapsed) {
@@ -175,10 +177,11 @@ interface DropdownContentProps {
 }
 
 function DropdownContent({ sites, activeSite, onSelect, onAddSite }: DropdownContentProps) {
+  const t = useTranslations('switcher')
   return (
     <div className="py-1.5">
       {sites.length === 0 && (
-        <p className="px-4 py-3 text-sm text-[#555]">Sin sitios todavía</p>
+        <p className="px-4 py-3 text-sm text-[#555]">{t('noSites')}</p>
       )}
       {sites.map((site) => {
         const isActive = activeSite?.id === site.id
@@ -222,7 +225,7 @@ function DropdownContent({ sites, activeSite, onSelect, onAddSite }: DropdownCon
         >
           <Plus size={10} className="text-[#10B981]" />
         </div>
-        <span className="text-sm text-[#10B981] font-medium">Agregar sitio</span>
+        <span className="text-sm text-[#10B981] font-medium">{t('addSite')}</span>
       </button>
     </div>
   )

@@ -21,9 +21,20 @@
     "vitals": "Core Web Vitals",
     "keywords": "Keywords",
     "geo": "GEO",
+    "audit": "Audit",
     "alerts": "Alerts",
     "reports": "Reports",
-    "settings": "Settings"
+    "settings": "Settings",
+    "sites": "My Sites",
+    "switchLocale": "Switch language",
+    "collapse": "Collapse",
+    "userPlaceholder": "User",
+    "analyzing": "Analyzing...",
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    }
   },
   "dashboard": {
     "seoScore": "SEO Score",
@@ -33,33 +44,147 @@
     "vsLastWeek": "vs last week",
     "viewAll": "View all",
     "analyzeWithAI": "Analyze with AI",
-    "trafficByChannel": "Traffic by channel",
-    "topPages": "Top pages",
-    "criticalIssues": "Critical issues",
-    "howToFix": "How to fix it",
-    "aiInsights": "AI Insights",
-    "scrollDepth": "Scroll depth",
-    "timeOnPage": "Time on page",
-    "bounceRate": "Bounce rate"
+    "edit": "Edit",
+    "tagline": "Global Performance Insights",
+    "organicVisitsLabel": "organic visits",
+    "securityAlerts": "Security & Alerts",
+    "systemHealthy": "System Healthy",
+    "noIssuesDetected": "No issues detected",
+    "critical": "Critical",
+    "actionRequired": "Action required",
+    "warnings": "Warnings",
+    "optimizable": "Optimizable",
+    "networkStatus": {
+      "healthy": "Network Healthy",
+      "disconnected": "Network Disconnected",
+      "pending": "Pending Setup"
+    },
+    "vitals": {
+      "title": "Core Web Vitals",
+      "empty": "No Data",
+      "status": {
+        "good": "Good",
+        "needs-improvement": "Needs Improvement",
+        "poor": "Poor",
+        "unknown": "No data"
+      },
+      "lcp": {
+        "desc": "Largest Contentful Paint: Measures the time it takes for the largest content element on the page to load.",
+        "importance": "Key for user's perception of speed."
+      },
+      "cls": {
+        "desc": "Cumulative Layout Shift: Measures visual stability and how often elements shift unexpectedly.",
+        "importance": "Prevents accidental clicks due to layout jumps."
+      },
+      "inp": {
+        "desc": "Interaction to Next Paint: Measures the page's response to user interactions (clicks, keys).",
+        "importance": "Ensures the interface feels smooth and responsive."
+      }
+    },
+    "settings": {
+      "title": "Project Settings",
+      "nameLabel": "Project Name",
+      "namePlaceholder": "e.g. My Website",
+      "logoLabel": "Project Logo",
+      "upload": "Upload image",
+      "formats": "Supports PNG, JPG, WEBP",
+      "ready": "{name} (Ready to upload)",
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "dateRange": {
+      "7d": "7d",
+      "30d": "30d",
+      "90d": "90d"
+    },
+    "topPages": {
+      "title": "Top Performing Pages",
+      "analytics": "Analytics",
+      "empty": "Connect the CDN to visualize your domain traffic"
+    },
+    "traffic": {
+      "title": "Traffic Acquisition",
+      "empty": "Awaiting ingestion analytics...",
+      "channels": {
+        "organic_search": "Organic",
+        "direct": "Direct",
+        "referral": "Referral",
+        "social": "Social",
+        "paid_search": "Paid"
+      }
+    },
+    "issues": {
+      "title": "Critical SEO Hazards",
+      "detected": "{count} Detected",
+      "solve": "Solve",
+      "emptyTitle": "Immaculate Status",
+      "emptySubtitle": "Zero Critical Vulnerabilities",
+      "labels": {
+        "missing_title": "Missing <title> tag",
+        "long_title": "Title too long",
+        "short_title": "Title too short",
+        "missing_meta": "Missing meta description",
+        "long_meta": "Meta description too long",
+        "short_meta": "Meta description too short",
+        "missing_h1": "Missing H1 tag",
+        "no_canonical": "No canonical URL",
+        "noindex": "Page blocked (noindex)",
+        "thin_content": "Thin content",
+        "missing_alt": "Images without alt",
+        "missing_schema": "Missing structured data",
+        "missing_og_title": "Missing og:title",
+        "missing_og_image": "Missing og:image"
+      }
+    },
+    "aiInsights": {
+      "title": "AI Diagnostic Intelligence",
+      "pendingTitle": "Intelligence Pending",
+      "pendingSubtitle": "Activate the Noctra Edge Network to enable real-time neural diagnostics.",
+      "setupGuide": "System Setup Guide",
+      "impact": {
+        "high": "High Impact",
+        "medium": "Medium Impact",
+        "low": "Low Impact"
+      }
+    }
   },
   "alerts": {
+    "title": "Alerts",
     "critical": "Critical",
     "warning": "Warning",
-    "info": "Info",
+    "info": "Information",
     "active": "Active",
     "acknowledged": "Acknowledged",
     "resolved": "Resolved",
     "acknowledge": "Mark as acknowledged",
-    "viewAffectedPage": "View affected page",
+    "viewAffectedPage": "View page",
     "ignore": "Ignore",
     "analyzing": "Claude is analyzing this issue...",
-    "impact": "This issue is impacting you:",
-    "howToFix": "How to fix it:",
+    "impactTitle": "This issue is impacting you on:",
+    "howToFixTitle": "How to fix it:",
     "expectedResult": "Expected result:",
+    "affectedUrl": "Affected URL:",
+    "currentValue": "Current value",
+    "threshold": "Threshold",
+    "aiAnalysis": "AI Analysis",
+    "recoveryEst": "Estimated recovery: {days} days",
+    "aiError": "Could not generate automatic analysis.",
     "effort": {
       "low": "Easy",
       "medium": "Medium",
       "high": "Complex"
+    },
+    "types": {
+      "lcp_degraded": "LCP Degraded",
+      "cls_degraded": "CLS Degraded",
+      "inp_degraded": "INP Degraded",
+      "seo_score_drop": "SEO Score Low",
+      "page_missing_title": "Page missing title",
+      "page_missing_h1": "Page missing H1",
+      "bounce_rate_spike": "Bounce rate spike",
+      "position_drop": "Position drop",
+      "geo_visibility_lost": "GEO visibility lost",
+      "anomaly_detected": "Anomaly detected"
     }
   },
   "onboarding": {
@@ -302,5 +427,16 @@
         "contact": "Contact"
       }
     }
+  },
+  "switcher": {
+    "selectSite": "Select site",
+    "noSites": "No sites yet",
+    "addSite": "Add site"
+  },
+  "audit": {
+    "running": "Your audit is in progress — results will appear shortly...",
+    "completed": "Audit completed! Scores have been updated.",
+    "failed": "The audit encountered an error. You can try again.",
+    "close": "Close"
   }
 }
