@@ -10,7 +10,7 @@
 // ----------------------
 
 export type AuditStatus = 'pending' | 'running' | 'completed' | 'failed'
-export type CheckStatus = 'pass' | 'warn' | 'fail' | 'info' | 'error'
+export type CheckStatus = 'pass' | 'warn' | 'fail' | 'info' | 'error' | 'skipped'
 export type CheckGroup  = 'seo' | 'dns' | 'security' | 'performance' | 'tech' | 'reputation'
 export type TriggeredBy = 'manual' | 'onboarding' | 'scheduled'
 
@@ -257,11 +257,12 @@ export function getGroupChecks(group: CheckGroup): string[] {
 
 /** Score contribution per status. 'error' returns null → check is excluded from scoring. */
 const STATUS_SCORE: Record<CheckStatus, number | null> = {
-  pass:  100,
-  warn:  60,
-  fail:  0,
-  info:  100,
-  error: null,
+  pass:    100,
+  warn:    60,
+  fail:    0,
+  info:    100,
+  error:   null,
+  skipped: null,
 }
 
 /**
@@ -273,8 +274,8 @@ const STATUS_SCORE: Record<CheckStatus, number | null> = {
  *
  * Returns 0 if no scorable checks exist.
  */
-export function calculateGroupScore(checks: CheckResult[]): number {
-  if (checks.length === 0) return 0
+export function calculateGroupScore(checks: CheckResult[]): number | null {
+  if (checks.length === 0) return null
 
   type Pair = { weight: number; rawScore: number }
   const scorable: Pair[] = []
@@ -284,15 +285,15 @@ export function calculateGroupScore(checks: CheckResult[]): number {
     if (!meta) continue
 
     const rawScore = STATUS_SCORE[check.status]
-    if (rawScore === null) continue  // 'error' — skip
+    if (rawScore === null) continue  // 'error' or 'skipped' — exclude from weighted average
 
     scorable.push({ weight: meta.weight, rawScore })
   }
 
-  if (scorable.length === 0) return 0
+  if (scorable.length === 0) return null
 
   const totalWeight = scorable.reduce((sum, p) => sum + p.weight, 0)
-  if (totalWeight === 0) return 0
+  if (totalWeight === 0) return null
 
   const weighted = scorable.reduce((sum, p) => sum + (p.rawScore * p.weight) / totalWeight, 0)
   return Math.round(weighted)
@@ -309,9 +310,9 @@ export function calculateGroupScore(checks: CheckResult[]): number {
  * Returns 0 if the map is empty.
  */
 export function calculateOverallScore(
-  groupScores: Partial<Record<CheckGroup, number>>,
-): number {
-  const values = Object.values(groupScores).filter((v): v is number => v !== undefined)
-  if (values.length === 0) return 0
+  groupScores: Partial<Record<CheckGroup, number | null>>,
+): number | null {
+  const values = Object.values(groupScores).filter((v): v is number => v !== null && v !== undefined)
+  if (values.length === 0) return null
   return Math.round(values.reduce((sum, v) => sum + v, 0) / values.length)
 }

@@ -155,7 +155,22 @@ export async function checkDnssec(domain: string): Promise<CheckResult> {
         indeterminate = true
       }
     }
-  } catch (err) {
+  } catch (err: any) {
+    // BUG 1: node:dns throws ERR_INVALID_ARG_VALUE if 'DS' is not supported in the environment
+    const isInvalidRrtype = (err?.code === 'ERR_INVALID_ARG_VALUE') || 
+                           (err?.message?.includes('rrtype') && err?.message?.includes('invalid'))
+
+    if (isInvalidRrtype) {
+      return {
+        check_key: CHECK_KEY,
+        group:     GROUP,
+        status:    'skipped',
+        score:     null,
+        data:      { dsRecords, dnskeyFound },
+        error:     'DNSSEC "DS" check not supported in this environment (Node.js)',
+      }
+    }
+
     return errorResult(CHECK_KEY, err)
   }
 

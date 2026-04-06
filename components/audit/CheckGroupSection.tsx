@@ -28,21 +28,25 @@ const PRIORITY_COLORS = {
 
 function StatusIcon({ status, size = 16 }: { status: CheckStatus; size?: number }) {
   switch (status) {
-    case 'pass':  return <CheckCircle  size={size} className="text-[#10B981] shrink-0" />
-    case 'warn':  return <AlertTriangle size={size} className="text-[#F59E0B] shrink-0" />
-    case 'fail':  return <XCircle      size={size} className="text-[#EF4444] shrink-0" />
-    case 'info':  return <Info         size={size} className="text-[#8B8B9A] shrink-0" />
-    case 'error': return <AlertCircle  size={size} className="text-[#EF444480] shrink-0" />
+    case 'pass':    return <CheckCircle   size={size} className="text-[#10B981] shrink-0" />
+    case 'warn':    return <AlertTriangle size={size} className="text-[#F59E0B] shrink-0" />
+    case 'fail':    return <XCircle       size={size} className="text-[#EF4444] shrink-0" />
+    case 'info':    return <Info          size={size} className="text-[#8B8B9A] shrink-0" />
+    case 'error':   return <AlertCircle   size={size} className="text-[#EF444480] shrink-0" />
+    case 'skipped': return <Info          size={size} className="text-[#8B8B9A40] shrink-0" />
+    default:        return null
   }
 }
 
 function statusBg(status: CheckStatus): string {
   switch (status) {
-    case 'pass':  return 'border-[#10B98120]'
-    case 'warn':  return 'border-[#F59E0B20]'
-    case 'fail':  return 'border-[#EF444420]'
-    case 'info':  return 'border-[#1E1E2A]'
-    case 'error': return 'border-[#EF444420] opacity-60'
+    case 'pass':    return 'border-[#10B98120]'
+    case 'warn':    return 'border-[#F59E0B20]'
+    case 'fail':    return 'border-[#EF444420]'
+    case 'info':    return 'border-[#1E1E2A]'
+    case 'error':   return 'border-[#EF444420] opacity-60'
+    case 'skipped': return 'border-[#1E1E2A] opacity-40'
+    default:        return 'border-[#1E1E2A]'
   }
 }
 

@@ -94,7 +94,18 @@ export async function POST(req: NextRequest) {
     return jsonError('Domain not found or access denied', 'NOT_FOUND', 404)
   }
 
-  // 4. Deduplication — reject if a job is already running for this domain
+  // 4. Cleanup stuck jobs (older than 30 mins) & Deduplication
+  const STUCK_TIMEOUT_MINUTES = 30
+  const cutoff = new Date(Date.now() - STUCK_TIMEOUT_MINUTES * 60 * 1000).toISOString()
+
+  // Find and fail stuck jobs for this site
+  await supabase
+    .from('audit_jobs')
+    .update({ status: 'failed', completed_at: new Date().toISOString() })
+    .eq('domain_id', siteId)
+    .eq('status', 'running')
+    .lt('created_at', cutoff)
+
   const { data: runningJob } = await supabase
     .from('audit_jobs')
     .select('id')
@@ -181,14 +192,11 @@ export async function POST(req: NextRequest) {
 
       // 8. Calculate scores
       const GROUP_KEYS: CheckGroup[] = ['seo', 'dns', 'security', 'tech', 'performance', 'reputation']
-      const groupScores: Partial<Record<CheckGroup, number>> = {}
+      const groupScores: Partial<Record<CheckGroup, number | null>> = {}
       for (const group of GROUP_KEYS) {
         const checks = allChecks.filter((c) => c.group === group)
         if (checks.length > 0) {
-          const score = calculateGroupScore(checks)
-          if (score > 0 || checks.some((c) => c.status !== 'error')) {
-            groupScores[group] = score
-          }
+          groupScores[group] = calculateGroupScore(checks)
         }
       }
 
