@@ -48,6 +48,8 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
     }
   }
 
+  const gracePollsRef  = useRef(0)
+
   async function poll() {
     if (dismissedRef.current) return
 
@@ -76,7 +78,7 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
 
       // No active job, or job already finished
       if (!job || (job.status !== 'running' && job.status !== 'pending')) {
-        const currentState = stateRef.current  // always fresh via ref
+        const currentState = stateRef.current
 
         if (job?.status === 'completed' && currentState === 'running') {
           setState('completed')
@@ -88,15 +90,24 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
           setState('failed')
           clearTimer()
           timerRef.current = setTimeout(() => setState('idle'), 5000)
-        } else if (currentState !== 'completed' && currentState !== 'failed') {
-          setState('idle')
-          clearTimer()
+        } else {
+          // If we are in a grace period (just triggered), don't go idle yet
+          if (gracePollsRef.current > 0) {
+            console.log(`[AuditProgressBanner] No job yet, retrying... (grace: ${gracePollsRef.current})`)
+            gracePollsRef.current--
+            clearTimer()
+            timerRef.current = setTimeout(poll, POLL_INTERVAL_MS)
+          } else if (currentState !== 'completed' && currentState !== 'failed') {
+            setState('idle')
+            clearTimer()
+          }
         }
-        return // STOP POLLING
+        return // STOP POLLING if not in grace or finished
       }
 
       // Job is active — keep polling
       setState('running')
+      gracePollsRef.current = 0 // Job found, clear grace
       clearTimer()
       timerRef.current = setTimeout(poll, POLL_INTERVAL_MS)
 
@@ -121,6 +132,7 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
       setState('running')           // Optimistic UI immediately
       attemptsRef.current  = 0
       errorCountRef.current = 0
+      gracePollsRef.current = 3    // Give it 3 polls to find the job record
       clearTimer()
       // Delay first poll so the API has time to insert the job record in DB
       timerRef.current = setTimeout(poll, TRIGGER_DELAY_MS)

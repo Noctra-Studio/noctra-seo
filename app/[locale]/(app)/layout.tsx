@@ -7,8 +7,10 @@ import { usePathname } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import {
   Zap, FileText, Activity, Key, Globe, Bell, BarChart2,
-  Settings, ChevronLeft, ChevronRight, Sparkles, ScanSearch, LayoutGrid
+  Settings, ChevronLeft, ChevronRight, Sparkles, ScanSearch, LayoutGrid,
+  Menu, X
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { SiteProvider, useSite } from '@/lib/context/SiteContext';
@@ -110,6 +112,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   };
 
   const basePath = `/${locale}/dashboard/${projectId ?? ''}`;
+
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Close mobile menu on path change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   return (
     <div className="flex h-screen bg-[#0A0A0F] overflow-hidden">
@@ -215,28 +224,43 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         {/* Header */}
-        <header className="h-16 md:h-20 border-b border-white/[0.05] flex items-center justify-between px-6 md:px-10 shrink-0 sticky top-0 bg-[#0A0A0F]/80 backdrop-blur-xl z-30">
-          <div className="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
-            <span className="text-xs md:text-sm font-medium text-[#8B8B9A] flex items-center gap-2">
-              <span className="opacity-60">{getGreeting()},</span>
-              <span className="text-[#F1F1F5] font-bold">{userName || t('userPlaceholder')}</span>
-            </span>
+        <header className="h-16 md:h-20 border-b border-white/[0.05] flex items-center justify-between px-4 md:px-10 shrink-0 sticky top-0 bg-[#0A0A0F]/80 backdrop-blur-xl z-40">
+          <div className="flex items-center gap-4">
+            {/* Mobile menu trigger */}
+            <button 
+              onClick={() => setMobileMenuOpen(true)}
+              className="p-2 -ml-2 text-[#8B8B9A] md:hidden"
+            >
+              <Menu size={24} />
+            </button>
+            
+            <div className="flex flex-col md:flex-row md:items-center gap-0.5 md:gap-4">
+              <span className="text-[10px] md:text-sm font-medium text-[#8B8B9A] flex items-center gap-1.5 md:gap-2">
+                <span className="opacity-60">{getGreeting()},</span>
+                <span className="text-[#F1F1F5] font-bold">{userName || t('userPlaceholder')}</span>
+              </span>
+            </div>
           </div>
-          <button 
-            onClick={handleAnalyze}
-            disabled={isAnalyzing}
-            className={cn(
-              "flex items-center gap-2 px-3 py-2 md:px-5 md:py-2.5 rounded-2xl transition-all shadow-lg shadow-[#10B98105] group",
-              isAnalyzing 
-                ? "bg-[#10B98125] text-[#10B981] cursor-wait animate-pulse" 
-                : "bg-gradient-to-br from-[#10B98115] to-[#10B98105] border border-[#10B98125] text-[#10B981] hover:from-[#10B98125] hover:to-[#10B98110] hover:scale-[1.02] active:scale-[0.98]"
-            )}
-          >
-            <Sparkles size={14} className={cn("transition-transform", isAnalyzing ? "animate-spin" : "group-hover:rotate-12")} />
-            <span className="tracking-tight">{isAnalyzing ? t('analyzing') : td('analyzeWithAI')}</span>
-          </button>
+
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={handleAnalyze}
+              disabled={isAnalyzing}
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 md:px-5 md:py-2.5 rounded-2xl transition-all shadow-lg shadow-[#10B98105] group",
+                isAnalyzing 
+                  ? "bg-[#10B98125] text-[#10B981] cursor-wait animate-pulse" 
+                  : "bg-gradient-to-br from-[#10B98115] to-[#10B98105] border border-[#10B98125] text-[#10B981] hover:from-[#10B98125] hover:to-[#10B98110] hover:scale-[1.02] active:scale-[0.98]"
+              )}
+            >
+              <Sparkles size={14} className={cn("transition-transform", isAnalyzing ? "animate-spin" : "group-hover:rotate-12")} />
+              <span className="text-xs md:text-sm truncate max-w-[80px] md:max-w-none font-bold tracking-tight">
+                {isAnalyzing ? t('analyzing') : td('analyzeWithAI')}
+              </span>
+            </button>
+          </div>
         </header>
 
         {/* Page content */}
@@ -245,29 +269,100 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         </main>
       </div>
 
-      {/* Bottom nav — mobile refined */}
-      <nav className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-premium rounded-[2rem] px-4 h-16 z-50 flex items-center justify-around shadow-2xl">
-        {navItems.slice(0, 5).map(({ icon: Icon, label, href }) => {
-          const fullHref = `${basePath}${href}`;
-          const isActive = href === '' ? pathname === basePath : pathname.startsWith(`${basePath}${href}`);
-          return (
-            <Link
-              key={href}
-              href={fullHref}
-              className={cn(
-                'flex flex-col items-center gap-1 px-4 py-2 rounded-2xl transition-all duration-300 relative overflow-hidden',
-                isActive ? 'text-[#10B981] scale-110' : 'text-[#8B8B9A] opacity-60'
-              )}
+      {/* Mobile Drawer Overlay */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] md:hidden"
+            />
+            {/* Drawer */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed inset-y-0 left-0 w-[280px] bg-[#080808] border-r border-white/10 z-[101] md:hidden flex flex-col"
             >
-              <Icon size={20} className={cn('transition-all', isActive && 'emerald-glow')} />
-              <span className="text-[9px] font-bold uppercase tracking-wider">{label}</span>
-              {isActive && (
-                <div className="absolute inset-0 bg-[#10B98108] animate-in fade-in duration-500" />
-              )}
-            </Link>
-          );
-        })}
-      </nav>
+              <div className="flex items-center justify-between h-16 px-5 border-b border-white/[0.05]">
+                <div className="flex items-center gap-3">
+                  <Image src="/favicon-light.svg" alt="Noctra" width={24} height={24} className="brightness-200" />
+                  <span className="font-bold text-lg text-[#F1F1F5] font-display">Noctra</span>
+                </div>
+                <button 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="p-2 text-[#8B8B9A] hover:text-white transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="p-4 relative">
+                <SiteSwitcher collapsed={false} />
+              </div>
+
+              <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8B8B9A] px-3 mb-2 opacity-40">
+                  {t('sites')}
+                </p>
+                {topLevelItems.map(({ icon: Icon, label, href }) => {
+                  const fullHref = `/${locale}${href}`;
+                  const isActive = pathname.startsWith(fullHref);
+                  return (
+                    <Link
+                      key={href}
+                      href={fullHref}
+                      className={cn(
+                        'flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all',
+                        isActive
+                          ? 'bg-[#10B98110] text-[#10B981] font-bold'
+                          : 'text-[#8B8B9A] hover:text-[#F1F1F5]'
+                      )}
+                    >
+                      <Icon size={18} />
+                      <span>{label}</span>
+                    </Link>
+                  );
+                })}
+
+                <div className="my-4 border-t border-white/[0.05]" />
+                
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8B8B9A] px-3 mb-2 opacity-40">
+                   Dashboard
+                </p>
+                {navItems.map(({ icon: Icon, label, href }) => {
+                  const fullHref = `${basePath}${href}`;
+                  const isActive = href === '' ? pathname === basePath || pathname === `${basePath}/` : pathname.startsWith(`${basePath}${href}`);
+                  return (
+                    <Link
+                      key={href}
+                      href={fullHref}
+                      className={cn(
+                        'flex items-center gap-3.5 px-4 py-3 rounded-2xl text-sm transition-all',
+                        isActive
+                          ? 'bg-[#10B98110] text-[#10B981] font-bold'
+                          : 'text-[#8B8B9A] hover:text-[#F1F1F5]'
+                      )}
+                    >
+                      <Icon size={18} />
+                      <span>{label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              <div className="p-4 border-t border-white/[0.05] space-y-4">
+                <LocaleSwitcher />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
