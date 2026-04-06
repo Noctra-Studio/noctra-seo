@@ -128,7 +128,8 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
-  const [siteId, setSiteId] = useState('');
+  const [siteId, setSiteId] = useState('');       // domains.site_id (tracker text ID)
+  const [domainId, setDomainId] = useState('');   // domains.id (UUID — for audit trigger)
   const [projectId, setProjectId] = useState('');
   const [trackerInstalled, setTrackerInstalled] = useState(false);
   const [copied, setCopied] = useState<string | null>(null);
@@ -187,6 +188,7 @@ export default function OnboardingPage() {
         const domain = (projects.domains as any[])?.[0];
         if (domain) {
           setSiteId(domain.site_id);
+          setDomainId(domain.id);
           setTrackerInstalled(domain.tracker_installed);
         }
       }
@@ -276,6 +278,7 @@ export default function OnboardingPage() {
 
         if (domError) throw domError;
         setSiteId(newDomain.site_id);
+        setDomainId(newDomain.id);
       }
     } catch (err) {
       console.error('Error ensuring project:', err);
@@ -315,6 +318,20 @@ export default function OnboardingPage() {
           .from('users')
           .update({ notification_prefs: notifPrefs })
           .eq('id', user.id);
+      }
+
+      // Trigger onboarding audit in background — silent failure, never blocks redirect
+      if (domainId && aiContext.hostname) {
+        const auditUrl = `https://${aiContext.hostname.replace(/^https?:\/\//, '').replace(/\/$/, '')}`;
+        fetch('/api/audit/run', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            site_id:      domainId,
+            url:          auditUrl,
+            triggered_by: 'onboarding',
+          }),
+        }).catch(() => undefined);  // fire-and-forget
       }
 
       router.push(`/${locale}/dashboard/${projectId}`);

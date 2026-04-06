@@ -9,10 +9,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 const NAV_LINKS = [
+  { key: 'auditor', href: '#auditor', isNew: true },
   { key: 'howItWorks', href: '#como-funciona' },
   { key: 'features', href: '#caracteristicas' },
   { key: 'alerts', href: '#alertas' },
-  { key: 'forWho', href: '#para-quien' },
   { key: 'pricing', href: '#precios' },
 ];
 
@@ -76,16 +76,24 @@ export function NavBar() {
 
             {/* Nav links */}
             <nav className="flex items-center gap-8">
-              {NAV_LINKS.map(({ key, href }) => (
+              {NAV_LINKS.map(({ key, href, isNew }) => (
                 <a
                   key={key}
                   href={href}
-                  className="text-[10px] font-bold uppercase tracking-widest transition-colors duration-150"
-                  style={{ color: 'rgba(255,255,255,0.4)' }}
-                  onMouseEnter={e => { (e.target as HTMLElement).style.color = '#ffffff'; }}
-                  onMouseLeave={e => { (e.target as HTMLElement).style.color = 'rgba(255,255,255,0.4)'; }}
+                  className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest transition-colors duration-150"
+                  style={{ color: key === 'auditor' ? '#10b981' : 'rgba(255,255,255,0.4)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#ffffff'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = key === 'auditor' ? '#10b981' : 'rgba(255,255,255,0.4)'; }}
                 >
-                  {t(key)}
+                  {key === 'auditor' ? 'Site Auditor' : t(key)}
+                  {isNew && (
+                    <span
+                      className="text-[8px] font-black px-1.5 py-0.5 rounded-full"
+                      style={{ background: 'rgba(16,185,129,0.15)', color: '#10b981', border: '1px solid rgba(16,185,129,0.3)' }}
+                    >
+                      NEW
+                    </span>
+                  )}
                 </a>
               ))}
             </nav>
@@ -174,10 +182,11 @@ export function NavBar() {
                   initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06, duration: 0.3 }}
-                  className="text-4xl font-bold text-white"
+                  className="text-4xl font-bold"
+                  style={{ color: key === 'auditor' ? '#10b981' : '#ffffff' }}
                   onClick={() => setOpen(false)}
                 >
-                  {t(key)}
+                  {key === 'auditor' ? 'Site Auditor' : t(key)}
                 </motion.a>
               ))}
             </div>

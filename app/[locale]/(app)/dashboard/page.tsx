@@ -23,11 +23,13 @@ export default async function DashboardRootPage({ params }: { params: { locale: 
     return redirect(`/${locale}/onboarding`);
   }
 
-  // 3. Find first project in organization
+  // 3. Find first project in organization (prefer default)
   const { data: project } = await supabase
     .from('projects')
     .select('id')
     .eq('org_id', userData.org_id)
+    .order('is_default', { ascending: false })
+    .order('created_at',  { ascending: true })
     .limit(1)
     .maybeSingle();
 

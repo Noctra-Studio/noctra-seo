@@ -7,37 +7,76 @@ import { usePathname } from 'next/navigation';
 import { useParams } from 'next/navigation';
 import {
   Zap, FileText, Activity, Key, Globe, Bell, BarChart2,
-  Settings, ChevronLeft, ChevronRight, Sparkles
+  Settings, ChevronLeft, ChevronRight, Sparkles, ScanSearch, LayoutGrid
 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { SiteProvider, useSite } from '@/lib/context/SiteContext';
+import { SiteSwitcher } from '@/components/dashboard/SiteSwitcher';
 
 const navItems = [
-  { icon: Zap, label: 'Resumen', href: '' },
-  { icon: FileText, label: 'Páginas', href: '/pages' },
-  { icon: Activity, label: 'Core Web Vitals', href: '/vitals' },
-  { icon: Key, label: 'Keywords', href: '/keywords' },
-  { icon: Globe, label: 'GEO', href: '/geo' },
-  { icon: Bell, label: 'Alertas', href: '/alerts' },
-  { icon: BarChart2, label: 'Reportes', href: '/reports' },
-  { icon: Settings, label: 'Configuración', href: '/settings' },
+  { icon: Zap,         label: 'Resumen',         href: '' },
+  { icon: FileText,    label: 'Páginas',          href: '/pages' },
+  { icon: Activity,    label: 'Core Web Vitals',  href: '/vitals' },
+  { icon: Key,         label: 'Keywords',         href: '/keywords' },
+  { icon: Globe,       label: 'GEO',              href: '/geo' },
+  { icon: ScanSearch,  label: 'Auditoría',        href: '/audit' },
+  { icon: Bell,        label: 'Alertas',          href: '/alerts' },
+  { icon: BarChart2,   label: 'Reportes',         href: '/reports' },
+  { icon: Settings,    label: 'Configuración',    href: '/settings' },
 ];
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+// Top-level links (not project-scoped)
+const topLevelItems = [
+  { icon: LayoutGrid, label: 'Mis Sitios', href: '/sites' },
+];
+
+function LayoutContent({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
   const params = useParams();
   const projectId = params?.projectId as string;
-  const locale = params?.locale as string ?? 'es';
+  const locale = (params?.locale as string) ?? 'es';
   const [userName, setUserName] = useState<string | null>(null);
+  
+  const { activeSite } = useSite();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
+    console.log('[Header] Analizar IA clicked. activeSite:', activeSite);
+    if (!activeSite?.domain_id || !activeSite?.hostname) {
+      console.warn('[Header] No active site or hostname found for audit', activeSite);
+      return;
+    }
+    
     setIsAnalyzing(true);
-    // Simulate IA analysis
-    setTimeout(() => {
+    // Notify all banners to show "running" state immediately
+    window.dispatchEvent(new CustomEvent('noctra:audit_started'));
+    try {
+      console.log('[Header] Sending POST /api/audit/run for:', activeSite.hostname);
+      const res = await fetch('/api/audit/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          site_id: activeSite.domain_id,
+          url: activeSite.hostname,
+          triggered_by: 'manual'
+        }),
+      });
+
+      console.log('[Header] POST /api/audit/run response status:', res.status);
+      if (!res.ok) {
+        const error = await res.json();
+        console.error('[Header] Audit failed to start:', error);
+        // Optional: show alert or another event
+      } else {
+        console.log('[Header] Audit started successfully');
+      }
+    } catch (err) {
+      console.error('[Header] Audit trigger error:', err);
+    } finally {
       setIsAnalyzing(false);
-    }, 2000);
+    }
   };
 
   useEffect(() => {
@@ -89,8 +128,43 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           )}
         </div>
 
+        {/* Site switcher — below logo, above nav */}
+        <div className="pt-3 relative">
+          <SiteSwitcher collapsed={collapsed} />
+        </div>
+
         {/* Nav */}
-        <nav className="flex-1 py-6 px-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 py-3 px-3 space-y-1 overflow-y-auto">
+          {/* Top-level links (not project-scoped) */}
+          {topLevelItems.map(({ icon: Icon, label, href }) => {
+            const fullHref = `/${locale}${href}`;
+            const isActive = pathname.startsWith(fullHref);
+            return (
+              <Link
+                key={href}
+                href={fullHref}
+                className={cn(
+                  'flex items-center gap-3.5 px-3 py-2.5 rounded-xl text-sm transition-all group relative',
+                  isActive
+                    ? 'bg-[#10B98110] text-[#10B981] font-semibold'
+                    : 'text-[#8B8B9A] hover:text-[#F1F1F5] hover:bg-white/[0.03]'
+                )}
+              >
+                <Icon size={18} className={cn('transition-all', isActive ? 'scale-110' : 'group-hover:scale-110')} />
+                {!collapsed && <span className="flex-1 truncate">{label}</span>}
+                {isActive && !collapsed && (
+                  <div className="absolute right-2 w-1 h-4 bg-[#10B981] rounded-full shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                )}
+              </Link>
+            );
+          })}
+
+          {/* Divider before project-scoped nav */}
+          {!collapsed && projectId && (
+            <div className="mx-1 my-2" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }} />
+          )}
+
+          {/* Project-scoped nav items */}
           {navItems.map(({ icon: Icon, label, href }) => {
             const fullHref = `${basePath}${href}`;
             const isActive = href === '' ? pathname === basePath || pathname === `${basePath}/` : pathname.startsWith(`${basePath}${href}`);
@@ -189,5 +263,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         })}
       </nav>
     </div>
+  );
+}
+
+export default function AppLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <SiteProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </SiteProvider>
   );
 }

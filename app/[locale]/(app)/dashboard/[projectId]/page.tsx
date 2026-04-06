@@ -16,6 +16,7 @@ import { DateRangePicker } from '@/components/shared/DateRangePicker';
 import { subDays, format, isAfter } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { AuditProgressBanner } from '@/components/audit/AuditProgressBanner';
 
 interface DomainData {
   id: string;
@@ -277,6 +278,7 @@ export default function DashboardOverview() {
   return (
     <>
       <div className="p-8 space-y-10 pb-20 md:pb-12 max-w-[1600px] mx-auto">
+        {domain && <AuditProgressBanner domainId={domain.id} />}
         {/* Header row refinement */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}

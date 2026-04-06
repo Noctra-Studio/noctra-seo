@@ -8,9 +8,9 @@ create or replace function get_domain_vitals_p75(
   p_until timestamptz
 )
 returns table (
-  lcp numeric,
-  cls numeric,
-  inp numeric,
+  lcp double precision,
+  cls double precision,
+  inp double precision,
   sample_size bigint
 ) language plpgsql security definer as $$
 begin
