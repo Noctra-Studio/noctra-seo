@@ -125,8 +125,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           'flex items-center h-16 px-5 border-b border-white/[0.05]',
           collapsed ? 'justify-center' : 'gap-3'
         )}>
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#10B981] to-[#059669] flex items-center justify-center shadow-lg shadow-[#10B98120] squircle">
-            <Image src="/favicon-light.svg" alt="Noctra" width={20} height={20} className="brightness-200" />
+          <div className="w-8 h-8 flex items-center justify-center">
+            <Image src="/favicon-light.svg" alt="Noctra" width={24} height={24} className="brightness-200" />
           </div>
           {!collapsed && (
             <span className="font-bold text-lg tracking-tight text-[#F1F1F5] font-display">Noctra</span>
