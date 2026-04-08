@@ -117,13 +117,13 @@ export default function DashboardOverview() {
       
       // Mocked Domain and Project
       setDomain({
-        id: 'mock-id',
+        id: '00000000-0000-0000-0000-000000000000',
         hostname: 'noctra.studio',
         tracker_installed: true,
         first_pageview_at: new Date().toISOString(),
       });
       setProject({
-        id: 'mock-id',
+        id: '00000000-0000-0000-0000-000000000000',
         name: 'Noctra Studio',
         logo_url: null,
       });
