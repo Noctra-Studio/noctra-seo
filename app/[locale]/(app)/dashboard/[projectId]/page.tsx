@@ -115,18 +115,23 @@ export default function DashboardOverview() {
     if (MOCK_MODE) {
       setLoading(true);
       
-      // Mocked Domain and Project
-      setDomain({
-        id: '00000000-0000-0000-0000-000000000000',
-        hostname: 'noctra.studio',
-        tracker_installed: true,
-        first_pageview_at: new Date().toISOString(),
-      });
-      setProject({
-        id: '00000000-0000-0000-0000-000000000000',
-        name: 'Noctra Studio',
-        logo_url: null,
-      });
+      // Fetch REAL metadata even in mock mode so settings work
+      const [{ data: domains }, { data: projectData }] = await Promise.all([
+        supabase
+          .from('domains')
+          .select('id, hostname, tracker_installed, first_pageview_at')
+          .eq('project_id', projectId)
+          .limit(1)
+          .single(),
+        supabase
+          .from('projects')
+          .select('id, name, logo_url')
+          .eq('id', projectId)
+          .maybeSingle()
+      ]);
+
+      if (domains) setDomain(domains);
+      if (projectData) setProject(projectData as ProjectData);
 
       const today = new Date();
       

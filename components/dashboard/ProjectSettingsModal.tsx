@@ -48,9 +48,11 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
 
         const { error: uploadError } = await supabase.storage
           .from('project-logos')
-          .upload(filePath, logoFile);
+          .upload(filePath, logoFile, {
+            upsert: true
+          });
 
-        if (uploadError) throw uploadError;
+        if (uploadError) throw new Error(`Upload error: ${uploadError.message}`);
 
         const { data: { publicUrl } } = supabase.storage
           .from('project-logos')
@@ -68,13 +70,13 @@ export function ProjectSettingsModal({ project, open, onClose, onUpdate }: Proje
         })
         .eq('id', project.id);
 
-      if (dbError) throw dbError;
+      if (dbError) throw new Error(`Database error: ${dbError.message}`);
 
       onUpdate();
       onClose();
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error updating project:', err);
-      alert('Error: Asegúrate de que el bucket "project-logos" existe y es público en Supabase.');
+      alert(err.message || 'Error: Asegúrate de que el bucket "project-logos" existe y es público en Supabase.');
     } finally {
       setSaving(false);
     }
