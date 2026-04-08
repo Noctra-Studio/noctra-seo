@@ -69,9 +69,107 @@ export default function DashboardOverview() {
   useEffect(() => {
     if (!projectId) return;
     loadData();
+    healStuckJobs(); // Self-healing: mark old running jobs as failed
+    
+    // Periodically check for stuck jobs if user stays on page
+    const interval = setInterval(healStuckJobs, 1000 * 60 * 5); // 5 minutes
+    return () => clearInterval(interval);
   }, [projectId, days]);
 
+  async function healStuckJobs() {
+    let domainId: string;
+    if (!domain?.id) {
+      // If domain isn't loaded yet, try to find it first or wait for next interval
+      const { data: d } = await supabase
+        .from('domains')
+        .select('id')
+        .eq('project_id', projectId)
+        .maybeSingle();
+      if (!d) return;
+      domainId = d.id;
+    } else {
+      domainId = domain.id;
+    }
+
+    const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000).toISOString();
+    
+    console.info(`[Dashboard] Healing stuck jobs for domain ${domainId} before ${fifteenMinsAgo}`);
+    const { error } = await supabase
+      .from('audit_jobs')
+      .update({ 
+        status: 'failed', 
+        completed_at: new Date().toISOString()
+      })
+      .eq('domain_id', domainId)
+      .eq('status', 'running')
+      .lt('created_at', fifteenMinsAgo);
+
+    if (error) {
+      console.error('[Dashboard] Error healing stuck jobs:', error.message);
+    }
+  }
+
+  const MOCK_MODE = true; // Actívame para la captura
+
   async function loadData() {
+    if (MOCK_MODE) {
+      setLoading(true);
+      
+      // Mocked Domain and Project
+      setDomain({
+        id: 'mock-id',
+        hostname: 'noctra.studio',
+        tracker_installed: true,
+        first_pageview_at: new Date().toISOString(),
+      });
+      setProject({
+        id: 'mock-id',
+        name: 'Noctra Studio',
+        logo_url: null,
+      });
+
+      const today = new Date();
+      
+      setData({
+        seoScore: 100,
+        seoScoreTrend: 4.8,
+        organicVisits: 14520,
+        organicTrend: 18.4,
+        organicSparkline: [210, 245, 280, 260, 290, 310, 340, 360, 390, 420, 450, 480, 510, 540, 580, 620, 650, 680, 720, 760, 810, 850, 890, 940, 980, 1030, 1080, 1140, 1190, 1250],
+        activeAlerts: { critical: 0, warning: 0 },
+        vitals: {
+          lcp: { value: 1600, trend: 12.5 },
+          cls: { value: 0.012, trend: 5.2 },
+          inp: { value: 85, trend: 6.8 },
+        },
+        trafficChart: Array.from({ length: 30 }).map((_, i) => ({
+          date: format(subDays(today, 29 - i), 'dd MMM'),
+          organic_search: Math.round(450 + i * 35 + Math.random() * 60),
+          direct: Math.round(150 + i * 8 + Math.random() * 30),
+          referral: Math.round(80 + i * 4 + Math.random() * 15),
+          social: Math.round(60 + i * 3 + Math.random() * 10),
+        })),
+        topPages: [
+          { path: '/', visits: 5420, seo_score: 100 },
+          { path: '/blog/seo-audit-checklist', visits: 3840, seo_score: 100 },
+          { path: '/features/radar', visits: 2950, seo_score: 98 },
+          { path: '/pricing', visits: 2120, seo_score: 97 },
+          { path: '/case-study/noctra-growth', visits: 1850, seo_score: 95 },
+        ],
+        issues: [],
+        latestInsight: { 
+          summary: '¡Rendimiento excepcional! Tu SEO Score está en el máximo nivel posible (100). El crecimiento del tráfico orgánico (+18.4%) valida tus esfuerzos de contenido.', 
+          actions: [
+            { step: 1, instruction: 'Mantén la actual estrategia de contenido de alta calidad.', effort: 'low', expected_result: 'Crecimiento sostenido.' },
+            { step: 2, instruction: 'Sigue monitorizando las Core Web Vitals en Radar.', effort: 'low', expected_result: 'Mantener UX premium.' }
+          ] 
+        },
+      });
+
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     const now = new Date();
     const sinceCurrent = subDays(now, days).toISOString();

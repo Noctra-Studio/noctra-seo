@@ -4,8 +4,8 @@
 // =====================
 // NOTE: runtime is intentionally NOT 'edge' — checks use node:tls and node:dns
 
-import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { NextRequest, NextResponse, after } from 'next/server'
+import { createClient, createAdminClient } from '@/lib/supabase/server'
 import { runSeoChecks }         from '@/lib/auditor/checks/seo'
 import { runDnsChecks }         from '@/lib/auditor/checks/dns'
 import { runSecurityChecks }    from '@/lib/auditor/checks/security'
@@ -144,9 +144,9 @@ export async function POST(req: NextRequest) {
   
   // NOTE: We wrap the heavy work in an asynchronous function that we'll kick off 
   // without awaiting, or using Next's 'after' if available for reliability in serverless.
-  const performAudit = async () => {
+  const performAudit = async (supabaseAdmin: any) => {
     try {
-      await supabase
+      await supabaseAdmin
         .from('audit_jobs')
         .update({ status: 'running', started_at: new Date().toISOString() })
         .eq('id', jobId)
@@ -223,30 +223,38 @@ export async function POST(req: NextRequest) {
       console.info(`[Audit ${jobId}] Generating executive summary...`);
       const executiveSummary = await generateAuditSummary(partialJob, enrichedChecks)
 
-      // 10. Persist checks
-      const checksToInsert = enrichedChecks.map((c) => ({
-        job_id:          jobId,
-        check_key:       c.check_key,
-        group:           c.group,
-        status:          c.status,
-        score:           c.score,
-        data:            c.data,
-        summary:         c.summary         || null,
-        recommendations: c.recommendations?.length ? c.recommendations : null,
-      }))
+      // 10. Persist checks with safety mapping
+      const validStatuses = ['pass', 'warn', 'fail', 'info', 'error']
+      const checksToInsert = enrichedChecks.map((c) => {
+        let safeStatus = c.status as string
+        if (!validStatuses.includes(safeStatus)) {
+          console.warn(`[Audit ${jobId}] Invalid status '${safeStatus}' on check '${c.check_key}', mapping to 'info'`)
+          safeStatus = 'info'
+        }
+        
+        return {
+          job_id:          jobId,
+          check_key:       c.check_key,
+          group:           c.group,
+          status:          safeStatus,
+          score:           c.score,
+          data:            c.data,
+          summary:         c.summary         || null,
+          recommendations: c.recommendations?.length ? c.recommendations : null,
+        }
+      })
 
       if (checksToInsert.length > 0) {
-        const { error: insertError } = await supabase.from('audit_checks').insert(checksToInsert)
+        const { error: insertError } = await supabaseAdmin.from('audit_checks').insert(checksToInsert)
         if (insertError) throw new Error(`Persistence failed: ${insertError.message}`)
       }
 
       // 11. Complete job
-      await supabase
+      await supabaseAdmin
         .from('audit_jobs')
         .update({
           status:           'completed',
           completed_at:     new Date().toISOString(),
-          executive_summary: executiveSummary,
           score_overall:    overallScore,
           score_seo:        groupScores.seo         ?? null,
           score_dns:        groupScores.dns         ?? null,
@@ -260,15 +268,49 @@ export async function POST(req: NextRequest) {
       console.info(`[Audit ${jobId}] Finished successfully.`);
     } catch (err) {
       console.error(`[Audit ${jobId}] Background error:`, err);
-      await supabase
+      await supabaseAdmin
         .from('audit_jobs')
         .update({ status: 'failed', completed_at: new Date().toISOString() })
         .eq('id', jobId)
     }
   };
 
-  // Kick off background job (non-blocking)
-  performAudit();
+  // Kick off background job (non-blocking) using Next.js 15+ after()
+  // This ensures the process continues even after the client receives the response.
+  after(async () => {
+    console.info(`[Audit ${jobId}] Background execution started via after()`);
+    const supabaseAdmin = await createAdminClient();
+    try {
+      // Add a higher global timeout for the entire audit (5 mins)
+      const TIMEOUT_MS = 300000;
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error(`Audit ${jobId} timed out after ${TIMEOUT_MS/1000}s`)), TIMEOUT_MS)
+      );
+
+      await Promise.race([
+        performAudit(supabaseAdmin),
+        timeoutPromise
+      ]);
+
+      console.info(`[Audit ${jobId}] Background execution completed successfully.`);
+    } catch (err: any) {
+      console.error(`[Audit ${jobId}] Background execution failed or timed out:`, err);
+      
+      // Attempt to mark the job as failed if it hasn't completed
+      try {
+        await supabaseAdmin
+          .from('audit_jobs')
+          .update({ 
+            status: 'failed', 
+            completed_at: new Date().toISOString()
+          })
+          .eq('id', jobId)
+          .eq('status', 'running');
+      } catch (dbErr) {
+        console.error(`[Audit ${jobId}] Emergency status update failed:`, dbErr);
+      }
+    }
+  });
 
   // Return immediately to the client
   return NextResponse.json({

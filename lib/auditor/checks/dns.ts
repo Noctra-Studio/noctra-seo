@@ -164,7 +164,7 @@ export async function checkDnssec(domain: string): Promise<CheckResult> {
       return {
         check_key: CHECK_KEY,
         group:     GROUP,
-        status:    'skipped',
+        status:    'info',
         score:     null,
         data:      { dsRecords, dnskeyFound },
         error:     'DNSSEC "DS" check not supported in this environment (Node.js)',

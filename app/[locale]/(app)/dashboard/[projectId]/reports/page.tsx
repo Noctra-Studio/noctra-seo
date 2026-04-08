@@ -38,23 +38,25 @@ export default function ReportsPage() {
         
         setAiContext(org?.ai_context);
 
-        // 3. Get Audit History
-        const { data: audits } = await supabase
-          .from('audit_jobs')
-          .select('*')
-          .eq('project_id', projectId)
-          .order('created_at', { ascending: false });
+        // 3. Get Domain ID
+        const domainId = (project?.domains as any)?.[0]?.id;
         
-        setAuditHistory(audits || []);
-
-        // 4. Get general stats (dummy logic for score if no audits)
-        const domainId = (project.domains as any)?.[0]?.id;
         if (domainId) {
+          // 4. Get Audit History for this domain
+          const { data: audits } = await supabase
+            .from('audit_jobs')
+            .select('*')
+            .eq('domain_id', domainId)
+            .order('created_at', { ascending: false });
+          
+          setAuditHistory(audits || []);
+
+          // 5. Get current alerts count
           const { count: alertCount } = await supabase
             .from('alerts')
             .select('*', { count: 'exact', head: true })
             .eq('domain_id', domainId)
-            .eq('status', 'open');
+            .eq('status', 'active');
           
           setStats(s => ({ ...s, alerts: alertCount || 0 }));
         }

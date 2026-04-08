@@ -13,7 +13,7 @@ interface AuditProgressBannerProps {
 type BannerState = 'running' | 'completed' | 'failed' | 'idle'
 
 const POLL_INTERVAL_MS = 10_000
-const MAX_ERRORS       = 10   // Stop if we hit 10 consecutive network errors
+const MAX_ERRORS       = 20   // Stop if we hit 20 consecutive network errors
 const MAX_POLLS        = 24   // 24 polls * 10s = 4 minutes max wait
 // Delay before first poll after a trigger — gives the API time to create the job record
 const TRIGGER_DELAY_MS = 3_000
@@ -83,13 +83,19 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
         if (job?.status === 'completed' && currentState === 'running') {
           setState('completed')
           console.log('[AuditProgressBanner] Audit finished! Refreshing data...')
-          router.refresh()
+          
+          // Use a small delay for the refresh to ensure DB is fully consistent 
+          // and the animation has time to settle
+          setTimeout(() => {
+             router.refresh()
+          }, 1000)
+
           clearTimer()
-          timerRef.current = setTimeout(() => setState('idle'), 5000)
+          timerRef.current = setTimeout(() => setState('idle'), 8000)
         } else if (job?.status === 'failed' && currentState === 'running') {
           setState('failed')
           clearTimer()
-          timerRef.current = setTimeout(() => setState('idle'), 5000)
+          timerRef.current = setTimeout(() => setState('idle'), 8000)
         } else {
           // If we are in a grace period (just triggered), don't go idle yet
           if (gracePollsRef.current > 0) {
@@ -116,10 +122,23 @@ export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
         err.name === 'TypeError' ||
         err.name === 'AbortError' ||
         err.message?.includes('Failed to fetch')
-      if (!isNetworkError) console.error('[AuditProgressBanner] Poll error:', err)
+      
+      if (!isNetworkError) {
+        console.error('[AuditProgressBanner] Poll error (likely 500):', err)
+      } else {
+        console.warn('[AuditProgressBanner] Network error during poll, retrying...')
+      }
+
       errorCountRef.current++
       clearTimer()
-      timerRef.current = setTimeout(poll, POLL_INTERVAL_MS)
+      
+      // If we haven't hit max errors yet, just keep polling
+      if (errorCountRef.current < MAX_ERRORS) {
+        timerRef.current = setTimeout(poll, POLL_INTERVAL_MS)
+      } else {
+        console.error('[AuditProgressBanner] Critical: Max polling errors reached.')
+        setState('failed')
+      }
     }
   }
 

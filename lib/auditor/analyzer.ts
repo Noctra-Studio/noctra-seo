@@ -140,7 +140,7 @@ export async function analyzeAuditResults(
       }))
 
       const message = await client.messages.create({
-        model:      'claude-sonnet-4-6',
+        model:      'claude-3-5-sonnet-20240620',
         max_tokens: 2048,
         system:
           'Eres un experto en SEO técnico, seguridad web y rendimiento. Analizas resultados de auditorías web para agencias digitales en LATAM. Tus respuestas son directas, accionables y priorizadas. Respondes SOLO en JSON válido, sin markdown, sin texto extra.',
@@ -236,7 +236,7 @@ export async function generateAuditSummary(
       .join(', ')
 
     const message = await client.messages.create({
-      model:      'claude-sonnet-4-6',
+      model:      'claude-3-5-sonnet-20240620',
       max_tokens: 300,
       system:
         'Eres un consultor de SEO y seguridad web para agencias digitales en LATAM. Escribes resúmenes ejecutivos concisos en español.',
