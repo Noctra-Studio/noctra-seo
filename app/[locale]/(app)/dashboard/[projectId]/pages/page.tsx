@@ -24,6 +24,7 @@ export default function PagesPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const projectId = params?.projectId as string;
+  const locale = (params?.locale as string) ?? 'es';
   const pathParam = searchParams.get('path');
 
   const [pages, setPages] = useState<PageSignal[]>([]);
@@ -90,7 +91,7 @@ export default function PagesPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => router.push(`/dashboard/${projectId}`)}
+            onClick={() => router.push(`/${locale}/dashboard/${projectId}`)}
             className="p-2 hover:bg-white/5 rounded-xl border border-white/5 transition-colors group"
           >
             <ArrowLeft size={20} className="text-[#8B8B9A] group-hover:text-white" />

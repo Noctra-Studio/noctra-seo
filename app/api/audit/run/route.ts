@@ -218,6 +218,7 @@ export async function POST(req: NextRequest) {
         score_performance: groupScores.performance ?? null,
         score_tech: groupScores.tech ?? null,
         score_reputation: groupScores.reputation ?? null,
+        executive_summary: null,
         created_at: new Date().toISOString(),
       }
       console.info(`[Audit ${jobId}] Generating executive summary...`);
@@ -262,6 +263,7 @@ export async function POST(req: NextRequest) {
           score_performance: groupScores.performance ?? null,
           score_tech:       groupScores.tech        ?? null,
           score_reputation: groupScores.reputation  ?? null,
+          executive_summary: executiveSummary || null,
         })
         .eq('id', jobId)
 

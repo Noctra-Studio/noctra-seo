@@ -38,6 +38,7 @@ export interface AuditJob {
   score_performance: number | null
   score_tech:        number | null
   score_reputation:  number | null
+  executive_summary: string | null
   created_at:        string
 }
 

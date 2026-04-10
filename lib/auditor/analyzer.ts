@@ -85,6 +85,31 @@ function checkLabel(check_key: string): string {
 // ----------------------
 
 let _client: Anthropic | null = null
+const AI_ANALYSIS_TIMEOUT_MS = 12_000
+const AI_SUMMARY_TIMEOUT_MS = 8_000
+
+function hasAnthropicApiKey(): boolean {
+  return Boolean(process.env.ANTHROPIC_API_KEY?.trim())
+}
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`))
+    }, timeoutMs)
+
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
 
 function getClient(): Anthropic {
   if (!_client) {
@@ -119,7 +144,7 @@ export async function analyzeAuditResults(
   // Build a quick-lookup map for Claude results
   const enrichedMap = new Map<string, ClaudeCheckOutput>()
 
-  if (needsAnalysis.length > 0) {
+  if (needsAnalysis.length > 0 && hasAnthropicApiKey()) {
     try {
       const client = getClient()
 
@@ -139,15 +164,16 @@ export async function analyzeAuditResults(
         ),
       }))
 
-      const message = await client.messages.create({
-        model:      'claude-3-5-sonnet-20240620',
-        max_tokens: 2048,
-        system:
-          'Eres un experto en SEO técnico, seguridad web y rendimiento. Analizas resultados de auditorías web para agencias digitales en LATAM. Tus respuestas son directas, accionables y priorizadas. Respondes SOLO en JSON válido, sin markdown, sin texto extra.',
-        messages: [
-          {
-            role:    'user',
-            content: `Analiza los siguientes checks de auditoría para el sitio ${siteUrl} y genera recomendaciones accionables.
+      const message = await withTimeout(
+        client.messages.create({
+          model:      'claude-3-5-sonnet-20240620',
+          max_tokens: 2048,
+          system:
+            'Eres un experto en SEO técnico, seguridad web y rendimiento. Analizas resultados de auditorías web para agencias digitales en LATAM. Tus respuestas son directas, accionables y priorizadas. Respondes SOLO en JSON válido, sin markdown, sin texto extra.',
+          messages: [
+            {
+              role:    'user',
+              content: `Analiza los siguientes checks de auditoría para el sitio ${siteUrl} y genera recomendaciones accionables.
 
 Para cada check, genera:
 - summary: 1-2 oraciones explicando el hallazgo en términos de impacto de negocio (no técnico)
@@ -168,9 +194,12 @@ Responde con este JSON exacto:
 
 Checks a analizar:
 ${JSON.stringify(slimChecks, null, 2)}`,
-          },
-        ],
-      })
+            },
+          ],
+        }),
+        AI_ANALYSIS_TIMEOUT_MS,
+        'Audit AI enrichment',
+      )
 
       const rawText =
         message.content[0].type === 'text' ? message.content[0].text : ''
@@ -217,6 +246,10 @@ export async function generateAuditSummary(
   job: AuditJob,
   checks: EnrichedCheckResult[],
 ): Promise<string> {
+  if (!hasAnthropicApiKey()) {
+    return ''
+  }
+
   try {
     const client = getClient()
 
@@ -235,15 +268,16 @@ export async function generateAuditSummary(
       .map((c) => `${checkLabel(c.check_key)} (${c.status})`)
       .join(', ')
 
-    const message = await client.messages.create({
-      model:      'claude-3-5-sonnet-20240620',
-      max_tokens: 300,
-      system:
-        'Eres un consultor de SEO y seguridad web para agencias digitales en LATAM. Escribes resúmenes ejecutivos concisos en español.',
-      messages: [
-        {
-          role:    'user',
-          content: `Genera un resumen ejecutivo de 3-4 oraciones sobre el estado general de este sitio web.
+    const message = await withTimeout(
+      client.messages.create({
+        model:      'claude-3-5-sonnet-20240620',
+        max_tokens: 300,
+        system:
+          'Eres un consultor de SEO y seguridad web para agencias digitales en LATAM. Escribes resúmenes ejecutivos concisos en español.',
+        messages: [
+          {
+            role:    'user',
+            content: `Genera un resumen ejecutivo de 3-4 oraciones sobre el estado general de este sitio web.
 Escribe en segunda persona ("Tu sitio..."), tono profesional pero directo.
 No uses bullets ni markdown. Solo el párrafo.
 
@@ -251,9 +285,12 @@ Scores:
 ${scoreLines}
 
 Checks con problemas: ${failedChecks || 'ninguno'}`,
-        },
-      ],
-    })
+          },
+        ],
+      }),
+      AI_SUMMARY_TIMEOUT_MS,
+      'Audit executive summary',
+    )
 
     return message.content[0].type === 'text' ? message.content[0].text.trim() : ''
   } catch {

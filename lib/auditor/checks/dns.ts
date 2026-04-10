@@ -8,6 +8,7 @@ import type { CheckResult } from '../types'
 
 const GROUP = 'dns' as const
 const FETCH_TIMEOUT_MS = 10_000
+const DNS_LOOKUP_TIMEOUT_MS = 8_000
 
 // ----------------------
 // Utilities
@@ -42,6 +43,25 @@ function errorResult(check_key: string, err: unknown): CheckResult {
   }
 }
 
+function withDnsTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${DNS_LOOKUP_TIMEOUT_MS}ms`))
+    }, DNS_LOOKUP_TIMEOUT_MS)
+
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
+
 /**
  * Resolves a DNS record type and swallows ENODATA / ENOTFOUND,
  * returning an empty array instead of throwing.
@@ -51,7 +71,7 @@ async function safeResolve<T>(
   fn: () => Promise<T[]>,
 ): Promise<T[]> {
   try {
-    return await fn()
+    return await withDnsTimeout(fn(), 'DNS lookup')
   } catch (err: unknown) {
     const code = (err as NodeJS.ErrnoException).code ?? ''
     if (code === 'ENODATA' || code === 'ENOTFOUND' || code === 'ENORECORDS') {
@@ -132,8 +152,8 @@ export async function checkDnssec(domain: string): Promise<CheckResult> {
 
   try {
     const [dsRes, dnskeyRes] = await Promise.allSettled([
-      dnsPromises.resolve(host, 'DS'),
-      dnsPromises.resolve(host, 'DNSKEY'),
+      withDnsTimeout(dnsPromises.resolve(host, 'DS'), 'DNSSEC DS lookup'),
+      withDnsTimeout(dnsPromises.resolve(host, 'DNSKEY'), 'DNSSEC DNSKEY lookup'),
     ])
 
     if (dsRes.status === 'fulfilled') {
@@ -210,7 +230,10 @@ export async function checkIpInfo(domain: string): Promise<CheckResult> {
   let ip: string
 
   try {
-    const lookup = await dnsPromises.lookup(host, { family: 4 })
+    const lookup = await withDnsTimeout(
+      dnsPromises.lookup(host, { family: 4 }),
+      'IP lookup',
+    )
     ip = lookup.address
   } catch (err) {
     return errorResult(CHECK_KEY, err)

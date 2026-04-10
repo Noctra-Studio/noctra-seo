@@ -12,11 +12,11 @@ interface AuditProgressBannerProps {
 
 type BannerState = 'running' | 'completed' | 'failed' | 'idle'
 
-const POLL_INTERVAL_MS = 10_000
-const MAX_ERRORS       = 20   // Stop if we hit 20 consecutive network errors
-const MAX_POLLS        = 24   // 24 polls * 10s = 4 minutes max wait
+const POLL_INTERVAL_MS = 3_000
+const MAX_ERRORS       = 8    // Stop if we hit 8 consecutive network errors
+const MAX_POLLS        = 80   // 80 polls * 3s = 4 minutes max wait
 // Delay before first poll after a trigger — gives the API time to create the job record
-const TRIGGER_DELAY_MS = 3_000
+const TRIGGER_DELAY_MS = 750
 
 export function AuditProgressBanner({ domainId }: AuditProgressBannerProps) {
   const t = useTranslations('audit')

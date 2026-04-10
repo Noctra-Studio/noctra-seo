@@ -13,6 +13,7 @@ import type { CheckResult } from '../types'
 
 const GROUP = 'reputation' as const
 const RDAP_TIMEOUT_MS = 15_000
+const DNS_LOOKUP_TIMEOUT_MS = 8_000
 
 // ----------------------
 // Utilities
@@ -27,6 +28,25 @@ function errorResult(check_key: string, err: unknown): CheckResult {
     data: {},
     error: err instanceof Error ? err.message : String(err),
   }
+}
+
+function withDnsTimeout<T>(promise: Promise<T>, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`${label} timed out after ${DNS_LOOKUP_TIMEOUT_MS}ms`))
+    }, DNS_LOOKUP_TIMEOUT_MS)
+
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
 }
 
 /** Extract apex domain (e.g. "sub.example.com" → "example.com") */
@@ -66,7 +86,7 @@ export async function checkSpfDmarc(hostname: string): Promise<CheckResult> {
 
   // SPF — TXT records on apex
   try {
-    const records = await dns.resolveTxt(apex)
+    const records = await withDnsTimeout(dns.resolveTxt(apex), 'SPF lookup')
     for (const parts of records) {
       const joined = parts.join('')
       if (joined.toLowerCase().startsWith('v=spf1')) {
@@ -85,7 +105,10 @@ export async function checkSpfDmarc(hostname: string): Promise<CheckResult> {
 
   // DMARC — TXT records on _dmarc.<apex>
   try {
-    const records = await dns.resolveTxt(`_dmarc.${apex}`)
+    const records = await withDnsTimeout(
+      dns.resolveTxt(`_dmarc.${apex}`),
+      'DMARC lookup',
+    )
     for (const parts of records) {
       const joined = parts.join('')
       if (joined.toLowerCase().startsWith('v=dmarc1')) {
@@ -146,7 +169,7 @@ export async function checkDnsBlacklist(hostname: string): Promise<CheckResult> 
   // Resolve IPv4 address
   let ip: string
   try {
-    const addresses = await dns.resolve4(apex)
+    const addresses = await withDnsTimeout(dns.resolve4(apex), 'Blocklist IP lookup')
     if (!addresses.length) throw new Error('No A records found')
     ip = addresses[0]
   } catch (err) {
@@ -163,7 +186,10 @@ export async function checkDnsBlacklist(hostname: string): Promise<CheckResult> 
     BLOCKLISTS.map(async (list) => {
       const query = `${reversed}.${list}`
       try {
-        const addrs = await dns.resolve4(query)
+        const addrs = await withDnsTimeout(
+          dns.resolve4(query),
+          `Blocklist lookup for ${list}`,
+        )
         results.push({ list, listed: true, response: addrs[0] ?? null })
       } catch (err: unknown) {
         const code = (err as NodeJS.ErrnoException).code

@@ -10,9 +10,10 @@ interface RunAuditButtonProps {
   domainId:  string   // domains.id UUID — used as site_id in the API
   siteUrl:   string   // full URL for the audit
   className?: string
+  onStarted?: (jobId: string) => void
 }
 
-export function RunAuditButton({ domainId, siteUrl, className }: RunAuditButtonProps) {
+export function RunAuditButton({ domainId, siteUrl, className, onStarted }: RunAuditButtonProps) {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
@@ -50,13 +51,16 @@ export function RunAuditButton({ domainId, siteUrl, className }: RunAuditButtonP
         return
       }
 
+      window.dispatchEvent(new CustomEvent('noctra:audit_started'))
+      onStarted?.(data.job_id)
+
       toast.dismiss(toastId)
-      toast.success('Auditoría completada', {
-        description: `Score general: ${data.scores?.overall ?? '—'}/100 · ${data.checks_count} checks en ${(data.duration_ms / 1000).toFixed(1)}s`,
+      toast.success('Auditoría iniciada', {
+        description: 'El análisis corre en segundo plano. Actualizaremos los resultados al terminar.',
       })
 
       router.refresh()
-    } catch (err) {
+    } catch {
       toast.dismiss(toastId)
       toast.error('Error de red al ejecutar la auditoría')
     } finally {

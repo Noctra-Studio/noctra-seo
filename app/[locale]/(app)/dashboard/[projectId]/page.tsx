@@ -55,6 +55,7 @@ export default function DashboardOverview() {
   const params = useParams();
   const router = useRouter();
   const projectId = params?.projectId as string;
+  const locale = (params?.locale as string) ?? 'es';
   const [days, setDays] = useState(30);
   const [domain, setDomain] = useState<DomainData | null>(null);
   const [project, setProject] = useState<ProjectData | null>(null);
@@ -109,72 +110,7 @@ export default function DashboardOverview() {
     }
   }
 
-  const MOCK_MODE = true; // Actívame para la captura
-
   async function loadData() {
-    if (MOCK_MODE) {
-      setLoading(true);
-      
-      // Fetch REAL metadata even in mock mode so settings work
-      const [{ data: domains }, { data: projectData }] = await Promise.all([
-        supabase
-          .from('domains')
-          .select('id, hostname, tracker_installed, first_pageview_at')
-          .eq('project_id', projectId)
-          .limit(1)
-          .single(),
-        supabase
-          .from('projects')
-          .select('id, name, logo_url')
-          .eq('id', projectId)
-          .maybeSingle()
-      ]);
-
-      if (domains) setDomain(domains);
-      if (projectData) setProject(projectData as ProjectData);
-
-      const today = new Date();
-      
-      setData({
-        seoScore: 100,
-        seoScoreTrend: 4.8,
-        organicVisits: 14520,
-        organicTrend: 18.4,
-        organicSparkline: [210, 245, 280, 260, 290, 310, 340, 360, 390, 420, 450, 480, 510, 540, 580, 620, 650, 680, 720, 760, 810, 850, 890, 940, 980, 1030, 1080, 1140, 1190, 1250],
-        activeAlerts: { critical: 0, warning: 0 },
-        vitals: {
-          lcp: { value: 1600, trend: 12.5 },
-          cls: { value: 0.012, trend: 5.2 },
-          inp: { value: 85, trend: 6.8 },
-        },
-        trafficChart: Array.from({ length: 30 }).map((_, i) => ({
-          date: format(subDays(today, 29 - i), 'dd MMM'),
-          organic_search: Math.round(450 + i * 35 + Math.random() * 60),
-          direct: Math.round(150 + i * 8 + Math.random() * 30),
-          referral: Math.round(80 + i * 4 + Math.random() * 15),
-          social: Math.round(60 + i * 3 + Math.random() * 10),
-        })),
-        topPages: [
-          { path: '/', visits: 5420, seo_score: 100 },
-          { path: '/blog/seo-audit-checklist', visits: 3840, seo_score: 100 },
-          { path: '/features/radar', visits: 2950, seo_score: 98 },
-          { path: '/pricing', visits: 2120, seo_score: 97 },
-          { path: '/case-study/noctra-growth', visits: 1850, seo_score: 95 },
-        ],
-        issues: [],
-        latestInsight: { 
-          summary: '¡Rendimiento excepcional! Tu SEO Score está en el máximo nivel posible (100). El crecimiento del tráfico orgánico (+18.4%) valida tus esfuerzos de contenido.', 
-          actions: [
-            { step: 1, instruction: 'Mantén la actual estrategia de contenido de alta calidad.', effort: 'low', expected_result: 'Crecimiento sostenido.' },
-            { step: 2, instruction: 'Sigue monitorizando las Core Web Vitals en Radar.', effort: 'low', expected_result: 'Mantener UX premium.' }
-          ] 
-        },
-      });
-
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     const now = new Date();
     const sinceCurrent = subDays(now, days).toISOString();
@@ -195,7 +131,13 @@ export default function DashboardOverview() {
         .maybeSingle()
     ]);
 
-    if (!domains) { setLoading(false); return; }
+    if (!domains) {
+      setDomain(null);
+      setProject(projectData as ProjectData);
+      setData(null);
+      setLoading(false);
+      return;
+    }
     setDomain(domains);
     setProject(projectData as ProjectData);
 
@@ -503,7 +445,7 @@ export default function DashboardOverview() {
           <motion.div variants={{ hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0 } }} className="h-full">
             <div
               className="glass p-7 flex flex-col h-full gap-6 hover:border-[#10B98150] transition-all cursor-pointer shadow-2xl group relative overflow-hidden rounded-2xl"
-              onClick={() => router.push(`/dashboard/${projectId}/alerts`)}
+              onClick={() => router.push(`/${locale}/dashboard/${projectId}/alerts`)}
             >
               <div className="flex items-center justify-between z-10">
                 <span className="text-[10px] text-[#8B8B9A] font-black uppercase tracking-[0.15em]">{t('securityAlerts')}</span>
@@ -571,7 +513,7 @@ export default function DashboardOverview() {
           <IssuesList
             issues={data?.issues ?? []}
             onFix={(issue) => {
-              router.push(`/dashboard/${projectId}/pages?path=${encodeURIComponent(issue.path || '/')}`);
+              router.push(`/${locale}/dashboard/${projectId}/pages?path=${encodeURIComponent(issue.path || '/')}`);
             }}
           />
           <AIInsightsCard insight={data?.latestInsight} loading={false} />

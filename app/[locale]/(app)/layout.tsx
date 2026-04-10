@@ -17,6 +17,7 @@ import { SiteProvider, useSite } from '@/lib/context/SiteContext';
 import { SiteSwitcher } from '@/components/dashboard/SiteSwitcher';
 import { LocaleSwitcher } from '@/components/dashboard/LocaleSwitcher';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 // Nav items removed from global scope to be defined inside component with translations
 
@@ -57,16 +58,18 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
     }
     
     setIsAnalyzing(true);
-    // Notify all banners to show "running" state immediately
-    window.dispatchEvent(new CustomEvent('noctra:audit_started'));
     try {
+      const auditUrl = activeSite.hostname.startsWith('http')
+        ? activeSite.hostname
+        : `https://${activeSite.hostname}`;
+
       console.log('[Header] Sending POST /api/audit/run for:', activeSite.hostname);
       const res = await fetch('/api/audit/run', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           site_id: activeSite.domain_id,
-          url: activeSite.hostname,
+          url: auditUrl,
           triggered_by: 'manual'
         }),
       });
@@ -75,12 +78,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       if (!res.ok) {
         const error = await res.json();
         console.error('[Header] Audit failed to start:', error);
-        // Optional: show alert or another event
+        if (error?.code === 'ALREADY_RUNNING') {
+          toast.warning('Ya hay una auditoría en curso para este sitio.');
+        } else {
+          toast.error('No pudimos iniciar la auditoría', {
+            description: error?.error ?? 'Intenta de nuevo en un momento.',
+          });
+        }
       } else {
         console.log('[Header] Audit started successfully');
+        window.dispatchEvent(new CustomEvent('noctra:audit_started'));
+        toast.success('Auditoría iniciada', {
+          description: 'El análisis corre en segundo plano y actualizaremos el dashboard al terminar.',
+        });
       }
     } catch (err) {
       console.error('[Header] Audit trigger error:', err);
+      toast.error('Error de red al iniciar la auditoría');
     } finally {
       setIsAnalyzing(false);
     }

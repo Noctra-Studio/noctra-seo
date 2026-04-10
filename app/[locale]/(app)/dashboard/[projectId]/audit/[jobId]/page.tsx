@@ -75,8 +75,7 @@ export default async function AuditDetailPage({ params }: PageProps) {
     reputation:  auditJob.score_reputation,
   }
 
-  // executive_summary may be stored in the job data — handled gracefully
-  const executiveSummary = (auditJob as unknown as { executive_summary?: string }).executive_summary
+  const executiveSummary = auditJob.executive_summary
 
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-10 pb-24">
